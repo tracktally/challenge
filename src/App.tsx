@@ -1,0 +1,37 @@
+// src/App.tsx
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import ChallengeLayout from "./pages/ChallengeLayout";
+import ProgressPage from "./pages/ProgressPage";
+import StatisticsPage from "./pages/StatisticsPage";
+import SettingsPage from "./pages/SettingsPage";
+import HistoryPage from "./pages/HistoryPage";
+import {CreateChallengePage} from "./pages/CreateChallengePage.tsx";
+
+import './App.css'
+
+function App() {
+    return (
+        <>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/challenge/new" element={<CreateChallengePage />} />
+                    <Route path="/challenge/:id/*" element={<ChallengeLayout />}>
+
+                        <Route index element={<ProgressPage />} />
+                        <Route path="progress" element={<ProgressPage />} />
+                        <Route path="leaderboard" element={<StatisticsPage />} />
+                        <Route path="history" element={<HistoryPage />} />
+
+                        <Route path="settings" element={<SettingsPage />} />
+                        {/* how to handle secret for admin? */}
+                        <Route path="settings/:adminSecret" element={<SettingsPage />} />
+                    </Route>
+                </Routes>
+            </Router>
+        </>
+    );
+}
+
+export default App;
