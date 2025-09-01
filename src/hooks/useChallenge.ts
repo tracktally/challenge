@@ -38,6 +38,7 @@ export function useChallenge(id: string) {
     return challenge;
 }
 
+
 export function useChallengeByAnyId(anyId: string | null) {
     const [docId, setDocId] = useState<string | null>(null);
 

@@ -1,19 +1,34 @@
-import {Outlet, Link, useParams, useLocation} from "react-router-dom";
+import {Outlet, Link, useParams, useLocation, useNavigate} from "react-router-dom";
 import {useChallengeByAnyId} from "../hooks/useChallenge.ts";
+import {useLocalChallenge} from "../hooks/useLocalChallenge.ts"
 
 export default function ChallengeLayout() {
     var {id} = useParams();
+    const navigate = useNavigate();
     const location = useLocation();
     const challengeUrl = "/challenge/" + id + ""
     id = "/challenge/" + id;
+    console.log("challenge layout with id, ", id);
+    const {getLocalChallenge} = useLocalChallenge();
+
     const challenge = useChallengeByAnyId(id ?? null);
 
     if (!challenge) return <p>Loading...</p>;
+
+    const localChallenge = getLocalChallenge(challenge.id);
 
     const challengeName = challenge.name;
 
     const isActive = (path: string) =>
         location.pathname === `/challenge/${id}/${path}`;
+
+    if (! localChallenge || !localChallenge.userId) {
+        // create a new user and store challenge
+        if (!location.pathname.includes("join")) {
+            navigate("join")
+        }
+         return <Outlet context={{challenge}}/>
+    }
 
     return (
         <main className="flex flex-col min-h-screen">

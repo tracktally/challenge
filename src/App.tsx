@@ -9,6 +9,7 @@ import HistoryPage from "./pages/HistoryPage";
 import {CreateChallengePage} from "./pages/CreateChallengePage.tsx";
 
 import './App.css'
+import {CreateUserPage} from "./pages/CreateUserPage.tsx";
 
 function App() {
     return (
@@ -17,12 +18,14 @@ function App() {
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/challenge/new" element={<CreateChallengePage />} />
+                    {/*<Route path="/challenge/join/:id" element={<CreateUserPage />} />*/}
                     <Route path="/challenge/:id/*" element={<ChallengeLayout />}>
 
                         <Route index element={<ProgressPage />} />
                         <Route path="progress" element={<ProgressPage />} />
                         <Route path="leaderboard" element={<StatisticsPage />} />
                         <Route path="history" element={<HistoryPage />} />
+                        <Route path="join" element={<CreateUserPage />} />
 
                         <Route path="settings" element={<SettingsPage />} />
                         {/* how to handle secret for admin? */}

@@ -10,11 +10,11 @@ export default function HomePage() {
     const navigate = useNavigate();
 
     // remove banner after refresh
-    useEffect(() => {
-        if (location.state?.banner) {
-            navigate(".", { replace: true });
-        }
-    }, [location, navigate]);
+    // useEffect(() => {
+    //     if (location.state?.banner) {
+    //         navigate(".", { replace: true });
+    //     }
+    // }, [location, navigate]);
 
 
     return (

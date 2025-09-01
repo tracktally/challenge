@@ -7,6 +7,7 @@ export interface LocalChallenge {
     name: string;
     adminUrl: string;
     userUrl: string;
+    userId: string;
 }
 
 export function useLocalChallenge() {
@@ -27,12 +28,34 @@ export function useLocalChallenge() {
         return localChallenges.filter((item) => item.id === id).length > 0;
     }
 
+    // function saveLocalChallenge(challenge: LocalChallenge) {
+    //     setLocalChallenges((prev) => {
+    //         const next = [...prev, challenge];
+    //         localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); // persist immediately
+    //         return next;
+    //     });
+    // }
+
     function saveLocalChallenge(challenge: LocalChallenge) {
         setLocalChallenges((prev) => {
-            const next = [...prev, challenge];
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); // persist immediately
+            const exists = prev.some((c) => c.id === challenge.id);
+
+            let next;
+            if (exists) {
+                // update existing
+                next = prev.map((c) => (c.id === challenge.id ? challenge : c));
+            } else {
+                // add new
+                next = [...prev, challenge];
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
             return next;
         });
+    }
+
+    function getLocalChallenge(id: string): LocalChallenge | undefined {
+        return localChallenges.find((c) => c.id === id);
     }
 
     function removeLocalChallenge(id: string) {
@@ -43,5 +66,12 @@ export function useLocalChallenge() {
         });
     }
 
-    return {localChallenges, saveLocalChallenge, setLocalChallenges, removeLocalChallenge, containsLocalChallenge};
+    return {
+        localChallenges,
+        saveLocalChallenge,
+        setLocalChallenges,
+        removeLocalChallenge,
+        getLocalChallenge,
+        containsLocalChallenge
+    };
 }
