@@ -64,3 +64,12 @@ export async function incrementChallengeCounter(id: string, value: number) {
         updatedAt: serverTimestamp(),
     });
 }
+
+export async function updateChallenge(id: string, data: Partial<Challenge>) {
+    const ref = doc(db, "challenges", id);
+    console.log("Updating challenge:", id, data);
+    await updateDoc(ref, {
+        ...data,
+        updatedAt: serverTimestamp(),
+    });
+}

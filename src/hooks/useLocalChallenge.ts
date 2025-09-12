@@ -60,18 +60,23 @@ export function useLocalChallenge() {
 
     function removeLocalChallenge(id: string) {
         setLocalChallenges((prev) => {
+            console.log("Removing challenge:", id);
             const next = prev.filter((c) => c.id !== id);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
             return next;
         });
     }
 
-    return {
-        localChallenges,
-        saveLocalChallenge,
-        setLocalChallenges,
-        removeLocalChallenge,
-        getLocalChallenge,
-        containsLocalChallenge
-    };
+    function editLocalChallenge(id: string, updates: Partial<LocalChallenge>) {
+        setLocalChallenges((prev) => {
+            console.log("Editing challenge:", id, updates);
+            const next = prev.map((c) => c.id === id ? {...c, ...updates} : c);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+            console.log("Updated localChallenges:", next);
+            return next;
+        });
+    }
+
+    return {localChallenges, saveLocalChallenge, setLocalChallenges
+        , removeLocalChallenge, containsLocalChallenge, editLocalChallenge};
 }
