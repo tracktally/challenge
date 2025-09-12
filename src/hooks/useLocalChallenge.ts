@@ -58,6 +58,11 @@ export function useLocalChallenge() {
         return localChallenges.find((c) => c.id === id);
     }
 
+    function getUserFromLocalChallenge(id: string): string | undefined {
+        const challenge = getLocalChallenge(id);
+        return challenge?.userId;
+    }
+
     function removeLocalChallenge(id: string) {
         setLocalChallenges((prev) => {
             console.log("Removing challenge:", id);
@@ -78,5 +83,6 @@ export function useLocalChallenge() {
     }
 
     return {localChallenges, saveLocalChallenge, setLocalChallenges
-        , removeLocalChallenge, containsLocalChallenge, editLocalChallenge};
+        , removeLocalChallenge, containsLocalChallenge, editLocalChallenge, getLocalChallenge
+        , getUserFromLocalChallenge};
 }
