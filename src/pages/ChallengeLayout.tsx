@@ -3,7 +3,7 @@ import {useChallengeByUuid} from "../hooks/useChallenge"
 import {useLocalChallenges} from "../hooks/useLocalChallenges"
 import {useUser} from "../hooks/useUser"
 import {useUsers} from "../hooks/useUsers"
-
+import { useBufferedActivity } from "../hooks/useBufferedActivity.ts";
 
 export default function ChallengeLayout() {
     var {uuid} = useParams();
@@ -18,6 +18,8 @@ export default function ChallengeLayout() {
     console.log(user);
     const users = useUsers(challenge?.id ?? "");
 
+    /* Keep this here to use buffered activity even on different menu entries */
+    const {addReps} = useBufferedActivity(challenge, user, 10);
     
     if (!challenge) return <p>Loading...</p>;
 
@@ -35,6 +37,8 @@ export default function ChallengeLayout() {
         }
          return <Outlet context={{challenge}}/>
     }
+
+    
 
     return (
         <main className="flex flex-col min-h-screen">
@@ -79,7 +83,7 @@ export default function ChallengeLayout() {
                 </div>
             </div>
             <div className="flex-1 p-4">
-                <Outlet context={{challenge, user, users}}/>
+                <Outlet context={{challenge, user, users, addReps}}/>
             </div>
             <div className="dock">
                 <Link to={`${challengeUrl}/progress`}>

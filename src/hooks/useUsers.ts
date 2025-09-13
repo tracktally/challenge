@@ -3,6 +3,8 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
 import type { User } from "../types/domain";
 
+// hook for all users in a challenge
+
 export function useUsers(challengeId: string) {
   const [users, setUsers] = useState<User[]>([]);
 

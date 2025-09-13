@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
+// operations to store challenge to local storage (in browser)
 export interface LocalChallenge {
     challengeId: string;
     publicUuid: string;

@@ -18,8 +18,8 @@ export function CreateChallengePage() {
         try {
             const challenge = await addChallenge({
                 name: name.trim(),
-                goalCounterChallenge: 100,
-                goalCounterUser: 1000,
+                goalCounterChallenge: 1000,
+                goalCounterUser: 100,
                 interval_hrs: 24,
                 counter: 0,
             });

@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react'
 import { incrementChallenge } from "../firebase/user.ts";
-import type { User, Challenge } from "../types/domain";
+import type { User, Challenge, Activity } from "../types/domain";
 import { useOutletContext } from "react-router-dom";
+import { useActivities } from "../hooks/useActivities.ts";
+
+
 
 
 export default function ProgressPage() {
-    const { challenge, user, users } = useOutletContext<{ challenge: Challenge, user: User, users: User[] }>();
+    const { challenge, user, users, addReps } = useOutletContext<{ challenge: Challenge, user: User, users: User[], addReps: (amount: number) => void }>();
 
     const [count, setCount] = useState(user?.counter ?? 0);
+    const [showCelebration, setShowCelebration] = useState(false);
     const [countChallenge, setCountChallenge] = useState(challenge?.counter ?? 0);
+    const logs = useActivities(challenge.id, 20);
 
     useEffect(() => {
         if (user != null && user.counter != count) {
@@ -27,8 +32,17 @@ export default function ProgressPage() {
     const inc = () => {
         console.log("inc: ", count)
         setCount(count + 1);
+
+        if (count + 1 == challenge.goalCounterUser && !showCelebration) {
+            setShowCelebration(true);
+            setTimeout(() => setShowCelebration(false), 3000); // hide after 3 sec
+        }
+
+
+
         setCountChallenge(count + 1);
         incrementChallenge(challenge.id, user.id, 1)
+        addReps(1);
 
     }
     const dec = () => {
@@ -36,6 +50,7 @@ export default function ProgressPage() {
         setCountChallenge(count - 1);
         setCount(count - 1);
         incrementChallenge(challenge.id, user.id, -1)
+        addReps(-1);
     }
 
 
@@ -45,57 +60,88 @@ export default function ProgressPage() {
 
     return (
         <>
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                <div className="">
-                    <div>
-                        <div className="flex justify-between font-bold ">
-                            <span>You</span><span>{count} / {challenge.goalCounterUser}</span>
-                        </div>
-                        <progress className="progress progress-secondary w-full h-10"
-                            value={count}
-                            max={challenge.goalCounterUser}></progress>
-                        <div className="flex justify-between ">
-                            <span>Team Total</span><span>{challenge.counter} / {challenge.goalCounterChallenge}</span>
-                        </div>
-                        <progress className="progress progress-primary w-full h-4"
-                            value={challenge.counter}
-                            max={challenge.goalCounterChallenge}></progress>
+            <div className="">
+                <div className="flex-1 overflow-y-auto p-1 space-y-6">
+                    <h2 className="text-xl text-left font-semibold mb-4">Progress</h2>
+                    <div className="">
+                        <div>
+                            <div className="flex justify-between font-bold ">
+                                <span>You</span><span>{count} / {challenge.goalCounterUser}</span>
+                            </div>
+                            <progress className="progress progress-secondary w-full h-10"
+                                value={count}
+                                max={challenge.goalCounterUser}></progress>
+                            <div className="flex justify-between ">
+                                <span>Team Total</span><span>{challenge.counter} / {challenge.goalCounterChallenge}</span>
+                            </div>
+                            <progress className="progress progress-primary w-full h-4"
+                                value={challenge.counter}
+                                max={challenge.goalCounterChallenge}></progress>
 
-                        <div className="flex justify-center gap-8 mt-6">
-                            <button className="btn btn-secondary w-40 h-25 text-5xl"
-                                onClick={dec}
-                            >−
-                            </button>
-                            <button className="btn btn-primary w-40 h-25 text-5xl"
-                                onClick={inc}
-                            >＋
-                            </button>
+                            <div className="flex justify-center gap-8 mt-6">
+                                <button className="btn btn-secondary w-40 h-30 text-5xl"
+                                    onClick={dec}
+                                >−
+                                </button>
+                                <button className="btn btn-primary w-40 h-30 text-5xl"
+                                    onClick={inc}
+                                >＋
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="card shadow-xl p-4 space-y-6">
+            {/* ----------------------------- */}
+            {/* Activity Feed */}
+            {/* ----------------------------- */}
 
-                <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-                    <table className="table">
+            <div className="flex-1 overflow-y-auto p-1 mt-15">
+                <h2 className="text-xl text-left font-semibold mb-4">Activity Log</h2>
+                <div className="overflow-y-auto rounded-lg border border-base-content/10 bg-base-100">
+                    <table className="table table-zebra w-full">
                         <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Progress</th>
+                            <tr className="text-sm text-gray-500 uppercase">
+                                <th className="px-4 py-2">When</th>
+                                <th className="px-4 py-2">Who</th>
+                                <th className="px-4 py-2 text-right">Progress</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <th>1</th>
-                                <td>{user.name}</td>
-                                <td>{count} / {challenge.goalCounterUser}</td>
-                            </tr>
+                            {logs.map((log: Activity) => {
+                                const isYou = log.userId === user.id;
+                                const time = log.createdAt.toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                });
 
+                                return (
+                                    <tr key={log.id} className="hover">
+                                        <td className="px-4 py-2 text-gray-600">{time}</td>
+                                        <td className={`px-4 py-2 ${isYou ? "font-bold text-primary" : ""}`}>
+                                            {isYou ? "You" : log.userName}
+                                        </td>
+                                        <td className="px-4 py-2 text-right font-semibold text-success">
+                                            +{log.amount}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+
+            {showCelebration && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 z-50 pointer-events-none">
+                    <span className="text-9xl animate-bounce">🎉</span>
+                    <h2 className="mt-6 text-4xl font-extrabold text-white animate-pulse">
+                        Awesome! Keep it up!
+                    </h2>
+                </div>
+            )}
+
         </>
     );
 }

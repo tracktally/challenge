@@ -3,6 +3,8 @@ import { doc, onSnapshot, query, where, collection } from "firebase/firestore";
 import { db } from "../firebase/config";
 import type { Challenge, User } from "../types/domain";
 
+// fetch a challenge by uuid or id
+
 export function useChallengeByUuid(uuid: string) {
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);

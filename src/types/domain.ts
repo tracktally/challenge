@@ -17,3 +17,11 @@ export interface User {
     name: string;
     counter: number;
 }
+
+export interface Activity {
+  id: string;
+  userId: string;
+  userName: string;
+  amount: number;
+  createdAt: Date;
+}
