@@ -1,42 +1,63 @@
-import {useState} from "react";
-import type {Challenge} from "../types/domain.ts";
-import {Link, useNavigate, useOutletContext, useParams} from "react-router-dom";
-import {createUser} from "../firebase/user.ts";
-import {useChallengeByAnyId} from "../hooks/useChallenge.ts";
-import {type LocalChallenge, useLocalChallenge} from "../hooks/useLocalChallenge.ts";
+import { useState } from "react";
+import type { Challenge } from "../types/domain.ts";
+import { Link, useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { addUser } from "../firebase/user.ts";
+import { useLocalChallenges } from "../hooks/useLocalChallenges.ts";
+import type { LocalChallenge } from "../hooks/useLocalChallenges.ts";
+
+
 
 export function CreateUserPage() {
-    // var {id} = useParams();
     const { challenge } = useOutletContext<{ challenge: Challenge }>();
-    // const challenge = useChallengeByAnyId(id ?? null);
     console.log(challenge);
     console.log("create new user");
 
     if (!challenge) return "Not found...";
 
+
     const [name, setName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const navigate = useNavigate();
-    const {localChallenges, saveLocalChallenge, getLocalChallenge} = useLocalChallenge()
+    const { localChallenges,
+        addLocalChallenge,
+        removeLocalChallenge,
+        getChallenge,
+        updateLocalChallenge } = useLocalChallenges()
+
+
 
     async function handleSave() {
         if (!name.trim()) return;
 
         setIsSaving(true);
         try {
-            const user = await createUser(challenge.id, name);
-            console.log(user);
-            let c = getLocalChallenge(challenge.id);
-            if (!c) {
-                c = {
-                    id: challenge.id,
+            const user = await addUser(challenge.id, {
+                name: name,
+                counter: 0
+            });
+            console.log("Created user in database, ", user);
+
+            let c = getChallenge(challenge.id);
+            console.log("fetching challenge in local storage. got: ", c);
+            if (c != null) {
+                let _c: LocalChallenge = c;
+                _c.userName = name;
+                _c.userId = user.id;
+                updateLocalChallenge(challenge.id, _c);
+            } else {
+                console.log("storing challenge new");
+                addLocalChallenge({
+                    challengeId: challenge.id,
                     name: challenge.name,
-                    userUrl: challenge.userUrl,
-                } as LocalChallenge;
-                saveLocalChallenge(c);
+                    userId: user.id,
+                    userName: name,
+                    publicUuid: challenge.publicUuid, // todo
+                    adminUuid: challenge.adminUuid,
+                    url: ""
+                });
             }
-            c.userId = user.id;
-            saveLocalChallenge(c);
+
+
             console.log("saveduser id: ", user.id, "in challenge", challenge.id);
 
 
@@ -56,7 +77,7 @@ export function CreateUserPage() {
             <div className="navbar bg-base-200 shadow px-4 ">
                 <div className="flex-none">
                     <Link to="/"
-                          className="btn btn-ghost btn-sm normal-case text-base-content/80 ">
+                        className="btn btn-ghost btn-sm normal-case text-base-content/80 ">
                         ← Back
                     </Link>
                 </div>
@@ -70,6 +91,12 @@ export function CreateUserPage() {
                         </p>
                         <input
                             type="text"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    handleSave();
+                                }
+                            }}
+                            autoFocus={true}
                             className="input input-bordered w-full mt-2"
                             value={name}
                             placeholder="Your name"

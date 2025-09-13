@@ -1,26 +1,32 @@
 import {Outlet, Link, useParams, useLocation, useNavigate} from "react-router-dom";
-import {useChallengeByAnyId} from "../hooks/useChallenge.ts";
-import {useLocalChallenge} from "../hooks/useLocalChallenge.ts"
+import {useChallengeByUuid} from "../hooks/useChallenge"
+import {useLocalChallenges} from "../hooks/useLocalChallenges"
+import {useUser} from "../hooks/useUser"
+import {useUsers} from "../hooks/useUsers"
+
 
 export default function ChallengeLayout() {
-    var {id} = useParams();
+    var {uuid} = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const challengeUrl = "/challenge/" + id + ""
-    id = "/challenge/" + id;
-    console.log("challenge layout with id, ", id);
-    const {getLocalChallenge} = useLocalChallenge();
+    const {getChallenge} = useLocalChallenges();
 
-    const challenge = useChallengeByAnyId(id ?? null);
+    const {challenge, isAdmin} = useChallengeByUuid(uuid ?? "");
+    const localChallenge = getChallenge(challenge?.id ?? "");
 
+    const user = useUser(challenge?.id ?? "", localChallenge?.userId ?? "");
+    console.log(user);
+    const users = useUsers(challenge?.id ?? "");
+
+    
     if (!challenge) return <p>Loading...</p>;
 
-    const localChallenge = getLocalChallenge(challenge.id);
-
-    const challengeName = challenge.name;
+    console.log("challenge layout with id, ", uuid);
+    const challengeName = challenge?.name
+    const challengeUrl = "/challenge/" + uuid;
 
     const isActive = (path: string) =>
-        location.pathname === `/challenge/${id}/${path}`;
+        location.pathname === `/challenge/${uuid}/${path}`;
 
     if (! localChallenge || !localChallenge.userId) {
         // create a new user and store challenge
@@ -73,7 +79,7 @@ export default function ChallengeLayout() {
                 </div>
             </div>
             <div className="flex-1 p-4">
-                <Outlet context={{challenge}}/>
+                <Outlet context={{challenge, user, users}}/>
             </div>
             <div className="dock">
                 <Link to={`${challengeUrl}/progress`}>

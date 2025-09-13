@@ -1,13 +1,14 @@
-import {useState} from "react";
-import {createChallenge} from "../firebase/challenge";
-import type {Challenge} from "../types/domain.ts";
-import {Link, useNavigate} from "react-router-dom";
-import {useLocalChallenge} from "../hooks/useLocalChallenge.ts";
+import { useState } from "react";
+import { addChallenge } from "../firebase/challenge.ts";
+
+import { Link, useNavigate } from "react-router-dom";
+import { useLocalChallenges } from "../hooks/useLocalChallenges.ts";
+
 
 export function CreateChallengePage() {
     const [name, setName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
-    const {saveLocalChallenge} = useLocalChallenge();
+    const { addLocalChallenge } = useLocalChallenges();
     const navigate = useNavigate();
 
     async function handleSave() {
@@ -15,17 +16,25 @@ export function CreateChallengePage() {
 
         setIsSaving(true);
         try {
-            const challenge: Challenge = await createChallenge(name);
-            saveLocalChallenge({
-                id: challenge.id,
-                name: challenge.name,
-                adminUrl: challenge.adminUrl,
-                userUrl: challenge.userUrl,
+            const challenge = await addChallenge({
+                name: name.trim(),
+                goalCounterChallenge: 100,
+                goalCounterUser: 1000,
+                interval_hrs: 24,
+                counter: 0,
+            });
+            addLocalChallenge({
+                challengeId: challenge.id,
+                name: name,
+                userId: "",
+                publicUuid: challenge.publicUuid,
+                adminUuid: challenge.adminUuid,
+                userName: "",
             });
 
             navigate("/", {
                 state: {
-                    banner: `Challenge ${challenge.name} created`
+                    banner: `Challenge ${name} created`
                 }
             });
             setName("");
@@ -39,7 +48,7 @@ export function CreateChallengePage() {
             <div className="navbar bg-base-200 shadow px-4 ">
                 <div className="flex-none">
                     <Link to="/"
-                          className="btn btn-ghost btn-sm normal-case text-base-content/80 ">
+                        className="btn btn-ghost btn-sm normal-case text-base-content/80 ">
                         ← Back
                     </Link>
                 </div>
@@ -55,6 +64,12 @@ export function CreateChallengePage() {
                             type="text"
                             className="input input-bordered w-full mt-2"
                             value={name}
+                             onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        handleSave();
+                                    }
+                                }}
+                            autoFocus={true}
                             placeholder="Challenge name"
                             onChange={(e) => setName(e.target.value)}
                         />
@@ -62,6 +77,7 @@ export function CreateChallengePage() {
                             <button
                                 onClick={handleSave}
                                 disabled={isSaving}
+                               
                                 className="btn btn-primary"
                             >
                                 {isSaving ? "Saving..." : "Save"}

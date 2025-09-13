@@ -1,57 +1,61 @@
-import {useEffect, useState} from "react";
-import {db} from "../firebase/config";
-import {doc, onSnapshot} from "firebase/firestore";
-import type {Challenge} from "../types/domain";
-import {findChallengeDocId} from "../firebase/challenge.ts";
+import { useEffect, useState } from "react";
+import { doc, onSnapshot, query, where, collection } from "firebase/firestore";
+import { db } from "../firebase/config";
+import type { Challenge, User } from "../types/domain";
 
-export function useChallenge(id: string) {
-    const [challenge, setChallenge] = useState<Challenge | null>(null);
+export function useChallengeByUuid(uuid: string) {
+  const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-    useEffect(() => {
-        if (!id) return;
+  useEffect(() => {
+    const ref = collection(db, "challenges");
 
-        const ref = doc(db, "challenges", id);
-        const unsub = onSnapshot(ref, (snap) => {
-            if (snap.exists()) {
-                const data = snap.data();
-                console.log("does exist");
-                setChallenge({
-                    id: snap.id,
-                    name: data.name,
-                    adminUrl: data.adminUrl,
-                    counter: data.counter,
-                    cratedAt: data.createdAt?.toDate(),
-                    goalCounterUser: data.goalCounterUser,
-                    goalCounterChallenge: data.goalCounterChallenge,
-                    interval_hrs: data.interval_hrs,
-                    startedAt: data.startedAt?.toDate(),
-                    userUrl: data.userUrl,
-                } as Challenge);
-            } else {
-                console.log("does not exist");
-                setChallenge(null);
-            }
-        });
-        return () => unsub();
-    }, [id]);
+    // Query for publicUuid
+    const qPublic = query(ref, where("publicUuid", "==", uuid));
+    const unsubPublic = onSnapshot(qPublic, (snap) => {
+      if (!snap.empty) {
+        const doc = snap.docs[0];
+        const data = doc.data() as Challenge;
+        // TODO: We should not leak admin UUID here!
+        setChallenge({ id: doc.id, ...data });
+        setIsAdmin(false);
+      }
+    });
 
-    return challenge;
+    // Query for adminUuid
+    const qAdmin = query(ref, where("adminUuid", "==", uuid));
+    const unsubAdmin = onSnapshot(qAdmin, (snap) => {
+      if (!snap.empty) {
+        const doc = snap.docs[0];
+        const data = doc.data() as Challenge;
+
+        setChallenge({ id: doc.id, ...data });
+        setIsAdmin(true);
+      }
+    });
+
+    return () => {
+      unsubPublic();
+      unsubAdmin();
+    };
+  }, [uuid]);
+
+  return { challenge, isAdmin };
 }
 
+export function useChallenge(challengeId: string) {
+  const [challenge, setChallenge] = useState<Challenge | null>(null);
 
-export function useChallengeByAnyId(anyId: string | null) {
-    const [docId, setDocId] = useState<string | null>(null);
+  useEffect(() => {
+    const ref = doc(db, "challenges", challengeId);
+    return onSnapshot(ref, (snap) => {
+      if (snap.exists()) {
+        setChallenge({ id: snap.id, ...(snap.data() as Omit<Challenge, "id">) });
+      } else {
+        setChallenge(null);
+      }
+    });
+  }, [challengeId]);
 
-    useEffect(() => {
-        if (!anyId) return;
-        let active = true;
-        findChallengeDocId(anyId).then((resolved) => {
-            if (active) setDocId(resolved);
-        });
-        return () => {
-            active = false;
-        };
-    }, [anyId]);
-
-    return useChallenge(docId ?? "");
+  return challenge;
 }

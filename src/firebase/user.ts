@@ -1,23 +1,53 @@
-import {db} from "./config.ts"
+import { db } from "./config.ts"
 
-import {collection, doc, serverTimestamp, addDoc, setDoc,} from "firebase/firestore";
+import {
+    doc,
+    setDoc,
+    addDoc, deleteDoc,
+    updateDoc,
+    serverTimestamp,
+    increment,
+} from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import type { User, Challenge } from "../types/domain.ts"
 
-import type {Challenge, User} from "../types/domain";
+import { v4 as uuidv4 } from "uuid";
 
-export async function createUser(challengeId: string,
-                                 userName: string) {
-    const usersRef = collection(db, "challenges", challengeId, "users");
-    const u: User = {
-        name: userName,
-        lastUpdatedAt: serverTimestamp(),
-        createdAt: serverTimestamp(),
-        counter: 0,
-    } as User;
-
-    const docRef = await addDoc(usersRef, u);
-
+// -------------------------------------
+// User
+// -------------------------------------
+export async function addUser(
+    challengeId: string,
+    data: Omit<User, "id">
+) {
+    const ref = collection(db, "challenges", challengeId, "users");
+    const docRef = await addDoc(ref, {
+        ...data,
+    });
     return {
         id: docRef.id,
-        ...u,
-    } as User;
+        ...data,
+    };
+}
+
+export async function updateUser(
+    challengeId: string,
+    userId: string,
+    data: Partial<Omit<User, "id">>
+) {
+    const ref = doc(db, "challenges", challengeId, "users", userId);
+    await updateDoc(ref, data);
+}
+
+export async function incrementChallenge(challengeId: string, userId: string, inc: number) {
+    const ref = doc(db, "challenges", challengeId, "users", userId);
+    await updateDoc(ref, { counter: increment(inc) });
+
+    const ref2 = doc(db, "challenges", challengeId);
+    await updateDoc(ref2, { counter: increment(inc) });
+}
+
+export async function deleteUser(challengeId: string, userId: string) {
+    const ref = doc(db, "challenges", challengeId, "users", userId);
+    await deleteDoc(ref);
 }

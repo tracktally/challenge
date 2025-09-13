@@ -25,12 +25,4 @@ export const db = initializeFirestore(app, {
     }),
 });
 
-// export const db = initializeFirestore(app, {
-//   localCache: persistentLocalCache({
-//     tabManager: persistentMultipleTabManager(),
-//   }),
-// });
-
-
-
 

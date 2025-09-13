@@ -1,21 +1,25 @@
 // src/pages/HomePage.tsx
-import {Link, useLocation, useNavigate,} from "react-router-dom";
-import {useLocalChallenge} from "../hooks/useLocalChallenge";
-import {useEffect} from "react";
-import {Button} from "@headlessui/react";
+import { Link, useLocation, useNavigate, } from "react-router-dom";
+import { useLocalChallenges } from "../hooks/useLocalChallenges";
+import type { LocalChallenge } from "../hooks/useLocalChallenges";
+import { useEffect } from "react";
+import { Button } from "@headlessui/react";
 
 export default function HomePage() {
-    const { localChallenges, removeLocalChallenge } = useLocalChallenge();
+    const { localChallenges,
+        addLocalChallenge,
+        removeLocalChallenge,
+        getChallenge,
+        updateLocalChallenge } = useLocalChallenges();
     const location = useLocation() as { state?: { banner?: string } };
-    const navigate = useNavigate();
 
-    // remove banner after refresh
-    // useEffect(() => {
-    //     if (location.state?.banner) {
-    //         navigate(".", { replace: true });
-    //     }
-    // }, [location, navigate]);
-
+    function createUrl(c: LocalChallenge) {
+        if (c.adminUuid && c.adminUuid.length > 0) {
+            return `/challenge/${c.adminUuid}`;
+        } else {
+            return `/challenge/${c.publicUuid}`;
+        }
+    }
 
     return (
         <>
@@ -39,28 +43,33 @@ export default function HomePage() {
                         </Link>
                     </div>
 
-                    {localChallenges.length > 0 && (
+                    {(Object.keys(localChallenges).length) > 0 && (
                         <div className="max-w-md mx-auto  text-left">
                             <h2 className="text-lg font-semibold mb-5 text-center">My Challenges</h2>
 
                             <ul className="space-y-2">
-                                {localChallenges.map((c) => (
-                                    <Link to={c.adminUrl ? c.adminUrl : c.userUrl}>
+                                {Object.entries(localChallenges).map(([id, c]) => (
+                                    // <Link to={c.url}>
+                                    <Link to={createUrl(c)}>
                                         <li
-                                            key={c.id}
+                                            key={c.challengeId}
                                             className="card bg-base-200 shadow-sm p-4 flex flex-col gap-2"
                                         >
+                                            <div className="flex flex-col">
                                             <div className="flex justify-between items-center">
                                                 <h3 className="font-bold">{c.name}</h3>
                                                 <Button
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        removeLocalChallenge(c.id)}}
+                                                        removeLocalChallenge(c.challengeId)
+                                                    }}
                                                     className="btn btn-sm btn-outline"
                                                 >
                                                     Delete
                                                 </Button>
+                                                </div>
+                                                <h3>User: <i>{c.userName != "" ? c.userName : "Not joined"}</i></h3>
                                             </div>
                                         </li>
                                     </Link>

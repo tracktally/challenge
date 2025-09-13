@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ChallengeLayout from "./pages/ChallengeLayout";
 import ProgressPage from "./pages/ProgressPage";
-import StatisticsPage from "./pages/StatisticsPage";
+import LeaderBoardPage from "./pages/LeaderBoardPage.tsx";
 import SettingsPage from "./pages/SettingsPage";
 import HistoryPage from "./pages/HistoryPage";
 import {CreateChallengePage} from "./pages/CreateChallengePage.tsx";
@@ -18,18 +18,15 @@ function App() {
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/challenge/new" element={<CreateChallengePage />} />
-                    {/*<Route path="/challenge/join/:id" element={<CreateUserPage />} />*/}
-                    <Route path="/challenge/:id/*" element={<ChallengeLayout />}>
+                    <Route path="/challenge/:uuid/*" element={<ChallengeLayout />}>
 
-                        <Route index element={<ProgressPage />} />
+                        <Route index element={<ProgressPage />} /> 
                         <Route path="progress" element={<ProgressPage />} />
-                        <Route path="leaderboard" element={<StatisticsPage />} />
-                        <Route path="history" element={<HistoryPage />} />
+                        <Route path="leaderboard" element={<LeaderBoardPage />} />
                         <Route path="join" element={<CreateUserPage />} />
-
                         <Route path="settings" element={<SettingsPage />} />
-                        {/* how to handle secret for admin? */}
-                        <Route path="settings/:adminSecret" element={<SettingsPage />} />
+                    
+    
                     </Route>
                 </Routes>
             </Router>
