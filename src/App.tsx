@@ -23,6 +23,7 @@ function App() {
                         <Route index element={<ProgressPage />} /> 
                         <Route path="progress" element={<ProgressPage />} />
                         <Route path="leaderboard" element={<LeaderBoardPage />} />
+                        <Route path="history" element={<HistoryPage />} />
                         <Route path="join" element={<CreateUserPage />} />
                         <Route path="settings" element={<SettingsPage />} />
                     

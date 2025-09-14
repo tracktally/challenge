@@ -5,7 +5,7 @@ export default function LeaderBoardPage() {
     const { challenge } = useOutletContext<{ challenge: Challenge }>();
     return (
         <div>
-            <h3 className="text-lg font-semibold mb-2">Leaderboard</h3>
+            <h3 className="text-lg font-semibold mb-2">TODO</h3>
             <p></p>
         </div>
     );

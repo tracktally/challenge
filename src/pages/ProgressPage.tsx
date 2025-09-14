@@ -11,9 +11,11 @@ export default function ProgressPage() {
     const { challenge, user, users, addReps } = useOutletContext<{ challenge: Challenge, user: User, users: User[], addReps: (amount: number) => void }>();
 
     const [count, setCount] = useState(user?.counter ?? 0);
+    const [counter, setCounter] = useState(0);
     const [showCelebration, setShowCelebration] = useState(false);
     const [countChallenge, setCountChallenge] = useState(challenge?.counter ?? 0);
     const logs = useActivities(challenge.id, 20);
+
 
     useEffect(() => {
         if (user != null && user.counter != count) {
@@ -60,25 +62,48 @@ export default function ProgressPage() {
 
     return (
         <>
+
+
             <div className="">
                 <div className="flex-1 overflow-y-auto p-1 space-y-6">
                     <h2 className="text-xl text-left font-semibold mb-4">Progress</h2>
                     <div className="">
                         <div>
-                            <div className="flex justify-between font-bold ">
-                                <span>You</span><span>{count} / {challenge.goalCounterUser}</span>
+                            <div className="flex justify-between font-bold">
+                                <h2 className="text text-left font-bold">Your Total</h2><span>{count} / {challenge.goalCounterUser}</span>
                             </div>
-                            <progress className="progress progress-secondary w-full h-10"
+                            <progress className="progress progress-primary w-full h-10"
                                 value={count}
                                 max={challenge.goalCounterUser}></progress>
                             <div className="flex justify-between ">
-                                <span>Team Total</span><span>{challenge.counter} / {challenge.goalCounterChallenge}</span>
+                                <span>Team Total</span><span>
+                                    {challenge.counter} / {challenge.goalCounterChallenge}</span>
                             </div>
-                            <progress className="progress progress-primary w-full h-4"
+                            <progress className="progress progress-secondary w-full h-5"
                                 value={challenge.counter}
                                 max={challenge.goalCounterChallenge}></progress>
 
-                            <div className="flex justify-center gap-8 mt-6">
+
+                            <div className="flex justify-between">
+                                <span>Time left</span>
+                                <span>
+
+                                    <span className="countdown text-bold">
+                                        <span style={{ "--value": 10 } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>10</span>:
+                                        <span style={{ "--value": 24 } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>24</span>:
+                                        <span style={{ "--value": 59 } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>59</span>
+                                    </span>
+                                </span>
+                            </div>
+                            <progress className="progress progress w-full h-5"
+                                value={challenge.counter}
+                                max={challenge.goalCounterChallenge}></progress>
+
+
+
+
+
+                            <div className="flex justify-center gap-5 mt-5">
                                 <button className="btn btn-secondary w-40 h-30 text-5xl"
                                     onClick={dec}
                                 >−
@@ -88,10 +113,21 @@ export default function ProgressPage() {
                                 >＋
                                 </button>
                             </div>
+
+
+
+
+
+
                         </div>
                     </div>
                 </div>
+
+
             </div>
+
+
+
             {/* ----------------------------- */}
             {/* Activity Feed */}
             {/* ----------------------------- */}
@@ -121,7 +157,7 @@ export default function ProgressPage() {
                                         <td className={`px-4 py-2 ${isYou ? "font-bold text-primary" : ""}`}>
                                             {isYou ? "You" : log.userName}
                                         </td>
-                                        <td className="px-4 py-2 text-right font-semibold text-success">
+                                        <td className="px-4 py-2 text-right font-semibold text-accent">
                                             +{log.amount}
                                         </td>
                                     </tr>
