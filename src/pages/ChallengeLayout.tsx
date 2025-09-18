@@ -4,12 +4,20 @@ import {useLocalChallenges} from "../hooks/useLocalChallenges"
 import {useUser} from "../hooks/useUser"
 import {useUsers} from "../hooks/useUsers"
 import { useBufferedActivity } from "../hooks/useBufferedActivity.ts";
+import { useState } from "react";
+import Counter from "./Counter.tsx";
 
 export default function ChallengeLayout() {
     var {uuid} = useParams();
     const navigate = useNavigate();
     const location = useLocation();
     const {getChallenge} = useLocalChallenges();
+
+    const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
+    const triggerCelebration = (message: string, timeout: number) => {
+        setCelebrationMessage(message);
+        setTimeout(() => setCelebrationMessage(null), timeout * 1000);
+    };
 
     const {challenge, isAdmin} = useChallengeByUuid(uuid ?? "");
     const localChallenge = getChallenge(challenge?.id ?? "");
@@ -82,6 +90,15 @@ export default function ChallengeLayout() {
                 </div>
             </div>
             <div className="flex-1 p-4">
+                {/* Counter section */}
+    
+                <Counter
+                challenge={challenge}
+                user={user}
+                addReps={addReps}
+                triggerCelebration={triggerCelebration}
+              />
+
                 <Outlet context={{challenge, user, users, addReps}}/>
             </div>
             <div className="dock">
@@ -110,7 +127,7 @@ export default function ChallengeLayout() {
                                       strokeWidth="2"/>
                             </g>
                         </svg>
-                        <span className="dock-label text-xs">Today</span>
+                        <span className="dock-label text-xs">Activity</span>
                     </button>
                 </Link>
                 <Link to={`${challengeUrl}/leaderboard`}>
@@ -166,6 +183,15 @@ export default function ChallengeLayout() {
                     </button>
                 </Link>
             </div>
+            {/* Celebration */}
+            {celebrationMessage && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 z-50 pointer-events-none">
+                <span className="text-9xl animate-bounce">🎉</span>
+                <h2 className="mt-6 text-4xl font-extrabold text-white animate-pulse">
+                    {celebrationMessage}
+                </h2>
+                </div>
+            )}
         </main>
     );
 }

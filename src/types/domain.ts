@@ -17,6 +17,7 @@ export interface User {
     name: string;
     counter: number;
     goalReachedAt: Date | null;
+    goalPartialReachedAt: Date | null; // for things like partial strike
 }
 
 export interface Activity {
