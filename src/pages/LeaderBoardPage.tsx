@@ -5,8 +5,9 @@ export default function LeaderBoardPage() {
     const { challenge, users, user } = useOutletContext<{ challenge: Challenge, users: User[], user: User }>();
 
     return (
-        <div>
-            <h3 className="text-lg font-semibold mb-2">Leaderboard</h3>
+        <div className="flex-1 overflow-y-auto p-1 mt-15">
+        <h2 className="text-xl text-left font-semibold mb-4">Leaderboard</h2>
+        {/* <h3 className="text-lg font-semibold mb-2">Leaderboard</h3> */}
             
             {/* ----------------------------- */}
             {/* Leader Board Table */}
@@ -47,8 +48,9 @@ export default function LeaderBoardPage() {
 
                                 const isYou = u.id === user.id;
 
+                                    {/* TODO: does not work on PC, only handy */}
                                     return (
-                                    <tr key={u.id} className={`hover${isYou ? " bg-yellow-100" : ""} text-xl`}> {/* TODO: does not work on PC, only handy */}
+                                    <tr key={u.id} className={`hover${isYou ? " bg-yellow-100" : ""} text-xl`}> 
                                         <th>{idx + 1}</th>
                                         <td><div>
                                             <div className={`${isYou ? "font-bold text-primary" : ""}`}>
