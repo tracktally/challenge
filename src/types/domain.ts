@@ -16,6 +16,7 @@ export interface User {
     id: string;
     name: string;
     counter: number;
+    goalReachedAt: Date | null;
 }
 
 export interface Activity {

@@ -47,6 +47,11 @@ export async function incrementChallenge(challengeId: string, userId: string, in
     await updateDoc(ref2, { counter: increment(inc) });
 }
 
+export async function markGoalReached(challengeId: string, userId: string) {
+    const ref = doc(db, "challenges", challengeId, "users", userId);
+    await updateDoc(ref, { goalReachedAt: serverTimestamp() });
+}
+
 export async function deleteUser(challengeId: string, userId: string) {
     const ref = doc(db, "challenges", challengeId, "users", userId);
     await deleteDoc(ref);

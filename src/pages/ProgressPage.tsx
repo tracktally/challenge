@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { incrementChallenge } from "../firebase/user.ts";
+import { incrementChallenge, markGoalReached } from "../firebase/user.ts";
 import type { User, Challenge, Activity } from "../types/domain";
 import { useOutletContext } from "react-router-dom";
 import { useActivities } from "../hooks/useActivities.ts";
@@ -55,9 +55,9 @@ export default function ProgressPage() {
         if (count + n >= challenge.goalCounterUser && !showCelebration) {
             setShowCelebration(true);
             setTimeout(() => setShowCelebration(false), 3000); // hide after 3 sec
+
+            markGoalReached(challenge.id, user.id);
         }
-
-
 
         setCountChallenge(count + n);
         incrementChallenge(challenge.id, user.id, n)
@@ -174,14 +174,14 @@ export default function ProgressPage() {
                         </thead>
                         <tbody>
                             {logs.map((log: Activity) => {
-                                const isYou = log.userId === user.id;
+                                const isYou = (log.userId === user.id);
                                 const time = log.createdAt.toLocaleTimeString([], {
                                     hour: "2-digit",
                                     minute: "2-digit",
                                 });
 
                                 return (
-                                    <tr key={log.id} className="hover">
+                                    <tr key={log.id} className={`hover ${isYou ? "bg-yellow-100" : ""}`}> {/* TODO: seems to not mark all lines correctly */}
                                         <td className="px-4 py-2 text-gray-600">{time}</td>
                                         <td className={`px-4 py-2 ${isYou ? "font-bold text-primary" : ""}`}>
                                             {isYou ? "You" : log.userName}
