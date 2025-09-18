@@ -27,7 +27,7 @@ export default function ProgressPage() {
     // seconds passed today
     const secondsInDay = 24 * 60 * 60;
     const secondsPassedToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    
+
     // Calculate time left until midnight (00:00)
     const midnight = new Date(now);
     midnight.setHours(24, 0, 0, 0);
@@ -90,15 +90,22 @@ export default function ProgressPage() {
                     <h2 className="text-xl text-left font-semibold mb-4">Progress</h2>
                     <div className="">
                         <div>
-                            <div className="flex justify-between font-bold">
-                                <h2 className="text text-left font-bold">Your Total</h2><span>{count} / {challenge.goalCounterUser}</span>
+                            <div className="flex justify-between items-end font-bold">
+                                <span className="text font-bold">Your Total</span>
+                                <span>
+                                    <span className="text-4xl font-bold">{count}</span>
+                                    <span className="text-base"> / {challenge.goalCounterUser}</span>
+                                </span>
                             </div>
                             <progress className="progress progress-primary w-full h-10"
                                 value={count}
                                 max={challenge.goalCounterUser}></progress>
-                            <div className="flex justify-between ">
-                                <span>Team Total</span><span>
-                                    {challenge.counter} / {challenge.goalCounterChallenge}</span>
+                            <div className="flex justify-between items-end">
+                                <span>Team Total</span>
+                                <span>
+                                    <span className="text-2xl font-bold">{challenge.counter}</span>
+                                    <span className="text-base"> / {challenge.goalCounterChallenge}</span>
+                                </span>
                             </div>
                             <progress className="progress progress-secondary w-full h-5"
                                 value={challenge.counter}
