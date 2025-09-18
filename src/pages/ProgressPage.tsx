@@ -48,28 +48,28 @@ export default function ProgressPage() {
 
     console.log("user: ", user);
 
-    const inc = () => {
-        console.log("inc: ", count)
-        setCount(count + 1);
+    const inc = (n: number) => {
+        console.log("inc: ", count, " by ", n)
+        setCount(count + n);
 
-        if (count + 1 == challenge.goalCounterUser && !showCelebration) {
+        if (count + n >= challenge.goalCounterUser && !showCelebration) {
             setShowCelebration(true);
             setTimeout(() => setShowCelebration(false), 3000); // hide after 3 sec
         }
 
 
 
-        setCountChallenge(count + 1);
-        incrementChallenge(challenge.id, user.id, 1)
-        addReps(1);
+        setCountChallenge(count + n);
+        incrementChallenge(challenge.id, user.id, n)
+        addReps(n);
 
     }
-    const dec = () => {
-        if (count < 1) return;
-        setCountChallenge(count - 1);
-        setCount(count - 1);
-        incrementChallenge(challenge.id, user.id, -1)
-        addReps(-1);
+    const dec = (n: number) => {
+        if (count < n) return;
+        setCountChallenge(count - n);
+        setCount(count - n);
+        incrementChallenge(challenge.id, user.id, -n)
+        addReps(-n);
     }
 
 
@@ -120,15 +120,27 @@ export default function ProgressPage() {
 
 
 
-                            <div className="flex justify-center gap-5 mt-5">
-                                <button className="btn btn-secondary w-40 h-30 text-5xl"
-                                    onClick={dec}
+                            <div className="flex justify-center gap-1 mt-5 items-center">
+                                <button className="btn btn-secondary w-10 h-16 text-xl"
+                                    onClick={() => dec(10)}
+                                >-10</button>
+                                <button className="btn btn-secondary w-10 h-16 text-xl"
+                                    onClick={() => dec(5)}
+                                >-5</button>
+                                <button className="btn btn-secondary w-20 h-30 text-5xl"
+                                    onClick={() => dec(1)}
                                 >−
                                 </button>
-                                <button className="btn btn-primary w-40 h-30 text-5xl"
-                                    onClick={inc}
+                                <button className="btn btn-primary w-20 h-30 text-5xl"
+                                    onClick={() => inc(1)}
                                 >＋
                                 </button>
+                                <button className="btn btn-primary w-10 h-16 text-xl"
+                                    onClick={() => inc(5)}
+                                >+5</button>
+                                <button className="btn btn-primary w-10 h-16 text-xl"
+                                    onClick={() => inc(10)}
+                                >+10</button>
                             </div>
 
 
