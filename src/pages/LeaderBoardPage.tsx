@@ -48,13 +48,13 @@ export default function LeaderBoardPage() {
                                 const isYou = u.id === user.id;
 
                                     return (
-                                    <tr key={u.id} className={`hover${isYou ? " bg-yellow-100" : ""}`}> {/* TODO: does not work on PC, only handy */}
+                                    <tr key={u.id} className={`hover${isYou ? " bg-yellow-100" : ""} text-xl`}> {/* TODO: does not work on PC, only handy */}
                                         <th>{idx + 1}</th>
                                         <td><div>
                                             <div className={`${isYou ? "font-bold text-primary" : ""}`}>
                                                 {isYou ? "You" : u.name}
                                             </div>
-                                            <div className="text-xs text-gray-500 -mt-1 w-30">
+                                            <div className="text-xs text-gray-500 -mt-1">
                                                 {u.goalReachedAt
                                                     ? (() => {
                                                         const d = u.goalReachedAt.toDate
@@ -66,18 +66,22 @@ export default function LeaderBoardPage() {
                                             </div>
                                         </div></td>
                                         <td className="text-right align-right">
-                                            <div className="flex items-center gap-2 w-full">
+                                            <div className="flex flex-col items-end w-full inline-block">
+                                                <div className="text-xs -mb-3 ">
+                                                    <span>
+                                                        <span className="text-2xl font-bold">{u.counter}</span>
+                                                        <span className="text-xs"> / {challenge.goalCounterUser}</span>
+                                                    </span>
+                                                </div>
                                                 <progress
                                                     className={
-                                                        "progress h-2 flex-grow " +
+                                                        "progress h-2 " +
                                                         (u.counter >= 100 ? "progress-success" : "progress-primary")
                                                     }
                                                     value={u.counter}
                                                     max={challenge.goalCounterUser}
                                                 ></progress>
-                                                <span className="inline-block text-right w-25">
-                                                    {u.counter} / {challenge.goalCounterUser}
-                                                </span>
+                                                
                                             </div>
                                         </td>
                                     </tr>
