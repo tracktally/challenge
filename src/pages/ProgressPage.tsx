@@ -16,6 +16,23 @@ export default function ProgressPage() {
     const [countChallenge, setCountChallenge] = useState(challenge?.counter ?? 0);
     const logs = useActivities(challenge.id, 20);
 
+    const [now, setNow] = useState(new Date());
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setNow(new Date());
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Calculate time left until midnight (00:00)
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    const ms_left = midnight.getTime() - now.getTime();
+    const hours_left = Math.floor(ms_left / (1000 * 60 * 60));
+    const minutes_left = Math.floor((ms_left % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds_left = Math.floor((ms_left % (1000 * 60)) / 1000);
+
+
 
     useEffect(() => {
         if (user != null && user.counter != count) {
@@ -89,9 +106,9 @@ export default function ProgressPage() {
                                 <span>
 
                                     <span className="countdown text-bold">
-                                        <span style={{ "--value": 10 } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>10</span>:
-                                        <span style={{ "--value": 24 } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>24</span>:
-                                        <span style={{ "--value": 59 } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>59</span>
+                                        <span style={{ "--value": hours_left } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>{hours_left}</span>:
+                                        <span style={{ "--value": minutes_left } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>{minutes_left}</span>:
+                                        <span style={{ "--value": seconds_left } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>{seconds_left}</span>
                                     </span>
                                 </span>
                             </div>
