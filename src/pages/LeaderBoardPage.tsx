@@ -54,7 +54,7 @@ export default function LeaderBoardPage() {
                                             <div className={`${isYou ? "font-bold text-primary" : ""}`}>
                                                 {isYou ? "You" : u.name}
                                             </div>
-                                            <div className="text-xs text-gray-500 -mt-1 w-20">
+                                            <div className="text-xs text-gray-500 -mt-1 w-30">
                                                 {u.goalReachedAt
                                                     ? (() => {
                                                         const d = u.goalReachedAt.toDate
@@ -62,7 +62,7 @@ export default function LeaderBoardPage() {
                                                             : new Date(u.goalReachedAt.seconds * 1000);
                                                         return "✅ " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
                                                     })()
-                                                    : (u.counter === 0 ? "Sleeping ..." : "Still going strong ...")}
+                                                    : (u.counter === 0 ? "😴 Sleeping ..." : "🏋️ Going strong ...")}
                                             </div>
                                         </div></td>
                                         <td className="text-right align-right">
