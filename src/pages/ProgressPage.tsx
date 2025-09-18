@@ -24,6 +24,10 @@ export default function ProgressPage() {
         return () => clearInterval(interval);
     }, []);
 
+    // seconds passed today
+    const secondsInDay = 24 * 60 * 60;
+    const secondsPassedToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    
     // Calculate time left until midnight (00:00)
     const midnight = new Date(now);
     midnight.setHours(24, 0, 0, 0);
@@ -105,7 +109,7 @@ export default function ProgressPage() {
                                 <span>Time left</span>
                                 <span>
 
-                                    <span className="countdown text-bold">
+                                    <span className={`countdown text-bold${hours_left < 2 ? " text-red-600" : ""}`}> 
                                         <span style={{ "--value": hours_left } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>{hours_left}</span>:
                                         <span style={{ "--value": minutes_left } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>{minutes_left}</span>:
                                         <span style={{ "--value": seconds_left } /* as React.CSSProperties */} aria-live="polite" aria-label={counter}>{seconds_left}</span>
@@ -113,8 +117,9 @@ export default function ProgressPage() {
                                 </span>
                             </div>
                             <progress className="progress progress w-full h-5"
-                                value={challenge.counter}
-                                max={challenge.goalCounterChallenge}></progress>
+                                value={secondsPassedToday}
+                                max={secondsInDay}>
+                            </progress>
 
 
 
