@@ -48,6 +48,8 @@ export default function ProgressPage() {
             </tbody>
           </table>
         </div>
+        {/* padding at the bottom */}
+        <div className="mb-20"></div>
       </div>
     </>
   );
