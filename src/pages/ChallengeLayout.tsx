@@ -39,7 +39,6 @@ export default function ChallengeLayout() {
     }
 
     
-
     return (
         <main className="flex flex-col min-h-screen">
             <div className="navbar bg-base-200 shadow px-4 min-h-[3rem]">
