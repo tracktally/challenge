@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { incrementChallenge, markGoalReached, updateUser } from "../firebase/user.ts";
 import type { User, Challenge } from "../types/domain";
 import { useOutletContext } from "react-router-dom";
+import { normalizeDate } from "../firebase/util.ts";
 
 interface CounterProps {
     challenge: Challenge;
@@ -25,16 +26,29 @@ export default function Counter({
         return () => clearInterval(interval);
     }, []);
 
-    // Time calculations
-    const secondsInDay = 24 * 60 * 60;
-    const secondsPassedToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    const midnight = new Date(now);
-    midnight.setHours(24, 0, 0, 0);
-    const ms_left = midnight.getTime() - now.getTime();
+    
+    let endDate = new Date(now);
+    let secondsInReset;
+    let secondPassed;
+    console.log(challenge.lastResetAt, challenge.interval_hrs)
+    if (challenge.lastResetAt != null && challenge.interval_hrs != null &&
+        challenge.interval_hrs != 0) {
+        endDate = new Date(challenge.lastResetAt.getTime() + challenge.interval_hrs * 3600 * 1000);
+        secondPassed = Math.floor((now.getTime() - challenge.lastResetAt.getTime()) / 1000);
+        secondsInReset = challenge.interval_hrs * 3600;
+    } else {
+        endDate.setHours(24, 0, 0, 0);
+        secondsInReset = 24 * 60 * 60;
+        secondPassed = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    }            
+
+
+    const ms_left = endDate.getTime() - now.getTime();
     const hours_left = Math.floor(ms_left / (1000 * 60 * 60));
     const minutes_left = Math.floor((ms_left % (1000 * 60 * 60)) / (1000 * 60));
     const seconds_left = Math.floor((ms_left % (1000 * 60)) / 1000);
 
+    
     useEffect(() => {
         if (user && user.counter !== count) {
             setCount(user.counter);
@@ -124,8 +138,8 @@ export default function Counter({
                 </div>
                 <progress
                     className="progress progress w-full h-5"
-                    value={secondsPassedToday}
-                    max={secondsInDay}
+                    value={secondPassed}
+                    max={secondsInReset}
                 />
 
                 {/* Buttons */}

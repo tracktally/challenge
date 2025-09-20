@@ -38,15 +38,13 @@ export default function SettingsPage() {
       resetTime,
     });
 
-
     updateChallenge(challenge.id, {
       name: name,
       goalCounterChallenge: challengeGoal,
       goalCounterUser: userGoal,
-      interval_hrs: intervalHours,
+      // interval_hrs: intervalHours,
       resetTimeStr: resetTime,
     }); 
-    // TODO: save challenge settings in backend
   };
 
 
@@ -106,9 +104,9 @@ export default function SettingsPage() {
               <span className="label-text">Last Reset Date</span>
             </div>
             <input
-              type="date"
+              type="text"
               disabled={true}
-              value={resetDate ? resetDate.toISOString().slice(0, 10) : ""}
+              value={resetDate ? resetDate.toString() : ""}
               className="input input-bordered w-full"
             />
           </label>
@@ -126,8 +124,8 @@ export default function SettingsPage() {
             />
           </label>
 
-          {/* Interval in Hours */}
-          <label className="form-control w-full">
+          {/* for now we dont expose these */ }
+          {/* <label className="form-control w-full">
             <div className="label">
               <span className="label-text">Interval (hours)</span>
             </div>
@@ -139,7 +137,7 @@ export default function SettingsPage() {
               className="input input-bordered w-full"
               min={1}
             />
-          </label>
+          </label> */}
 
  
 
