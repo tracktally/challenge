@@ -1,0 +1,57 @@
+name: Deploy to github pages
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+  
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout app repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Setup SSH with Deploy Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY_GITHUB_IO_MAIN }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Deploy fresh build
+        run: |
+          git clone --depth=1 git@github.com:tracktally/tracktally.github.io.git deploy
+          cd deploy
+
+          # wipe everything
+          rm -rf ./* .git
+
+          # init new repo
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # copy new build
+          cp -r ../dist/* ./
+
+          # commit & push as new history
+          git add .
+          git commit -m "Deploy fresh build from ${GITHUB_REPOSITORY}@${GITHUB_SHA}"
+          git branch -M deploy
+          git remote add origin git@github.com:tracktally/tracktally.github.io.git
+          git push origin deploy --force
