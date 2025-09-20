@@ -21,10 +21,10 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: cd app; npm install
 
       - name: Build project
-        run: npm run build
+        run: cd app; npm run build
 
       - name: Setup SSH with Deploy Key
         run: |
@@ -47,7 +47,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # copy new build
-          cp -r ../dist/* ./
+          cp -r ../app/dist/* ./
 
           # commit & push as new history
           git add .
