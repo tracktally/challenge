@@ -30,7 +30,6 @@ export default function Counter({
     let endDate = new Date(now);
     let secondsInReset;
     let secondPassed;
-    console.log(challenge.lastResetAt, challenge.interval_hrs)
     if (challenge.lastResetAt != null && challenge.interval_hrs != null &&
         challenge.interval_hrs != 0) {
         endDate = new Date(challenge.lastResetAt.getTime() + challenge.interval_hrs * 3600 * 1000);
