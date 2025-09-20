@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { doc, onSnapshot, query, where, collection } from "firebase/firestore";
 import { db } from "../firebase/config";
 import type { Challenge, User } from "../types/domain";
+import { normalizeDate } from "../firebase/util";
 
 // fetch a challenge by uuid or id
 
@@ -19,7 +20,12 @@ export function useChallengeByUuid(uuid: string) {
         const doc = snap.docs[0];
         const data = doc.data() as Challenge;
         // TODO: We should not leak admin UUID here!
-        setChallenge({ id: doc.id, ...data });
+        setChallenge({ 
+           ...data,
+          id: doc.id,
+          createdAt: normalizeDate(data.createdAt),
+          lastResetAt: normalizeDate(data.lastResetAt),
+         });
         setIsAdmin(false);
       }
     });
@@ -31,7 +37,13 @@ export function useChallengeByUuid(uuid: string) {
         const doc = snap.docs[0];
         const data = doc.data() as Challenge;
 
-        setChallenge({ id: doc.id, ...data });
+        setChallenge({ 
+           ...data,
+          id: doc.id,
+          createdAt: normalizeDate(data.createdAt),
+          lastResetAt: normalizeDate(data.lastResetAt),
+         });
+         
         setIsAdmin(true);
       }
     });
@@ -52,7 +64,12 @@ export function useChallenge(challengeId: string) {
     const ref = doc(db, "challenges", challengeId);
     return onSnapshot(ref, (snap) => {
       if (snap.exists()) {
-        setChallenge({ id: snap.id, ...(snap.data() as Omit<Challenge, "id">) });
+        setChallenge({ 
+          ...(snap.data() as Omit<Challenge, "id">) ,
+          id: snap.id, 
+          createdAt: normalizeDate(snap.data().createdAt),
+          lastResetAt: normalizeDate(snap.data().lastResetAt),
+          });
       } else {
         setChallenge(null);
       }

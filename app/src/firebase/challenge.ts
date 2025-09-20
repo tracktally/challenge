@@ -12,6 +12,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import type { User, Challenge } from "../types/domain.ts"
 
 import { v4 as uuidv4 } from "uuid";
+import { normalizeDate } from "./util.ts";
 
 
 // -------------------------------------
@@ -19,7 +20,7 @@ import { v4 as uuidv4 } from "uuid";
 // -------------------------------------
 
 export async function addChallenge(
-    data: Omit<Challenge, "id" | "publicUuid" | "adminUuid" | "createdAt" | "startedAt">
+    data: Omit<Challenge, "id" | "publicUuid" | "adminUuid" | "createdAt" | "lastResetAt">
 ) {
     const idUser = uuidv4();
     const idAdmin = uuidv4();
@@ -30,13 +31,17 @@ export async function addChallenge(
         publicUuid: idUser,
         adminUuid: idAdmin,
         createdAt: serverTimestamp(),
-        startedAt: serverTimestamp(),
+        lastResetAt: serverTimestamp(),
+        resetTimeStr: "00:00",
     });
+
     return {
+        ...data,
         id: docRef.id,
         publicUuid: idUser,
         adminUuid: idAdmin,
-        ...data,
+        lastResetAt: normalizeDate(data.lastResetAt),
+        createdAt: normalizeDate(data.createdAt),
     };
 }
 

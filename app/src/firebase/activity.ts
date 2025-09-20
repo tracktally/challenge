@@ -10,6 +10,7 @@ import {
 } from "firebase/firestore";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import type { Activity } from "../types/domain.ts"
+import { normalizeDate } from "./util.ts";
 
 
 export async function logActivity(challengeId: string,
@@ -22,9 +23,9 @@ export async function logActivity(challengeId: string,
     });
 
     return {
-        id: ref.id,
-        createdAt: created,
         ...data,
+        id: ref.id,
+        createdAt: normalizeDate(created),
 
     };
 }

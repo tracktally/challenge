@@ -9,7 +9,8 @@ export interface Challenge {
     goalCounterUser: number;
     goalCounterChallenge: number;
     createdAt: Date;
-    startedAt: Date;
+    lastResetAt: Date;
+    resetTimeStr: string   // HH:mm
 }
 
 export interface User {
