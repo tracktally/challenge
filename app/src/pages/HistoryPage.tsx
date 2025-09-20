@@ -30,7 +30,7 @@ export default function HistoryPage() {
     }, [challenge?.id, user?.id]);
     
     return (
-        <div className="flex-1 overflow-y-auto p-1 mt-15">
+        <div className="flex-1 overflow-y-auto p-1 mt-1">
             <h2 className="text-xl text-left font-semibold mb-4">History</h2>
             
             <div className="overflow-y-auto rounded-lg border border-base-content/10 bg-base-100">

@@ -1,19 +1,28 @@
 import { useOutletContext } from "react-router-dom";
 import { useActivities } from "../hooks/useActivities.ts";
 import type { User, Challenge, Activity } from "../types/domain";
+import Counter from "./Counter.tsx";
 
 export default function ProgressPage() {
-  const { challenge, user } = useOutletContext<{
+  const { challenge, user, addReps, triggerCelebration } = useOutletContext<{
     challenge: Challenge;
     user: User;
     users: User[];
     addReps: (amount: number) => void;
+    triggerCelebration: (message: string, timeout: number) => void;
   }>();
 
   const logs = useActivities(challenge.id, 20);
 
   return (
     <>
+      <Counter
+        challenge={challenge}
+        user={user}
+        addReps={addReps}
+        triggerCelebration={triggerCelebration}
+      />
+
       {/* Activity Log */}
       <div className="flex-1 overflow-y-auto p-1 mt-15">
         <h2 className="text-xl text-left font-semibold mb-4">Activity Log</h2>
@@ -49,7 +58,7 @@ export default function ProgressPage() {
           </table>
         </div>
         {/* padding at the bottom */}
-        <div className="mb-20"></div>
+        <div className="mb-30"></div>
       </div>
     </>
   );

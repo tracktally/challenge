@@ -5,7 +5,7 @@ import {useUser} from "../hooks/useUser"
 import {useUsers} from "../hooks/useUsers"
 import { useBufferedActivity } from "../hooks/useBufferedActivity.ts";
 import { useState } from "react";
-import Counter from "./Counter.tsx";
+
 
 export default function ChallengeLayout() {
     var {uuid} = useParams();
@@ -91,14 +91,6 @@ export default function ChallengeLayout() {
             </div>
             <div className="flex-1 p-4">
                 {/* Counter section */}
-    
-                <Counter
-                challenge={challenge}
-                user={user}
-                addReps={addReps}
-                triggerCelebration={triggerCelebration}
-              />
-
                 <Outlet context={{challenge, user, users, addReps}}/>
             </div>
             <div className="dock">
