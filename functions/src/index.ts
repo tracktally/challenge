@@ -8,8 +8,11 @@
  */
 
 import {setGlobalOptions} from "firebase-functions";
-import {onRequest} from "firebase-functions/https";
 import * as logger from "firebase-functions/logger";
+import * as admin from "firebase-admin";
+import { onSchedule } from "firebase-functions/v2/scheduler";
+
+admin.initializeApp();
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -26,7 +29,54 @@ import * as logger from "firebase-functions/logger";
 // this will be the maximum concurrent request count.
 setGlobalOptions({ maxInstances: 10 });
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+// Daily rollup and reset of counters
+export const dailyRollupAndReset = onSchedule({ schedule: "0 0 * * *", timeZone: "UTC" }, async () => {
+  const db = admin.firestore();
+  const challengesSnap = await db.collection("challenges").get();
+
+  // Compute date key for the previous day (since we run at 00:00)
+  const now = new Date();
+  const prev = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  prev.setUTCDate(prev.getUTCDate() - 1);
+  const yyyy = prev.getUTCFullYear();
+  const mm = String(prev.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(prev.getUTCDate()).padStart(2, "0");
+  const dateId = `${yyyy}-${mm}-${dd}`;
+
+  for (const chDoc of challengesSnap.docs) {
+    const challengeId = chDoc.id;
+    const challengeData = chDoc.data() as any;
+    const teamTotal = challengeData?.counter ?? 0;
+
+    const dailyRef = db.doc(`challenges/${challengeId}/dailyStats/${dateId}`);
+    const exists = await dailyRef.get();
+    if (exists.exists) {
+      logger.warn(`dailyStats already exists for ${challengeId} ${dateId}; skipping reset to avoid double-processing.`);
+      continue;
+    }
+
+    // Collect user counters
+    const usersSnap = await db.collection(`challenges/${challengeId}/users`).get();
+    const usersTotals: Record<string, number> = {};
+    usersSnap.forEach((u) => {
+      const data = u.data() as any;
+      usersTotals[u.id] = data?.counter ?? 0;
+    });
+
+    // Write daily rollup
+    await dailyRef.set({
+      date: admin.firestore.Timestamp.fromDate(prev),
+      teamTotal,
+      users: usersTotals,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+
+    // Reset counters in batches
+    const batch = db.batch();
+    batch.update(chDoc.ref, { counter: 0 });
+    for (const u of usersSnap.docs) {
+      batch.update(u.ref, { counter: 0 });
+    }
+    await batch.commit();
+  }
+});
