@@ -1,4 +1,4 @@
 #!/bin/make
 
 dev:
-	npm run dev -- --host
+	cd app; npm run dev -- --host

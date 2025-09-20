@@ -8,9 +8,17 @@
  */
 
 import {setGlobalOptions} from "firebase-functions";
+
+
+// import { onSchedule } from "firebase-functions/v2/scheduler";
+// import { onRequest } from "firebase-functions/v2/https";
+
+import * as functions from "firebase-functions";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import { onSchedule } from "firebase-functions/v2/scheduler";
+import { Request, Response } from "express";  // <-- add this for typing
+
+
 
 admin.initializeApp();
 
@@ -29,8 +37,11 @@ admin.initializeApp();
 // this will be the maximum concurrent request count.
 setGlobalOptions({ maxInstances: 10 });
 
-// Daily rollup and reset of counters
-export const dailyRollupAndReset = onSchedule({ schedule: "0 0 * * *", timeZone: "UTC" }, async () => {
+// export const dailyRollupAndReset = onSchedule({ schedule: "0 0 * * *", timeZone: "UTC" }, async () => {
+
+// XXX: No cron jobs in free plan. Do cron ourselves instead
+async function runDailyRollupAndReset() {
+  // Daily rollup and reset of counters
   const db = admin.firestore();
   const challengesSnap = await db.collection("challenges").get();
 
@@ -79,4 +90,12 @@ export const dailyRollupAndReset = onSchedule({ schedule: "0 0 * * *", timeZone:
     }
     await batch.commit();
   }
-});
+};
+
+
+export const dailyRollupAndResetHttp = functions.https.onRequest(
+  async (req: Request, res: Response): Promise<void> => {
+    await runDailyRollupAndReset();
+    res.send("Reset done");
+  }
+);
