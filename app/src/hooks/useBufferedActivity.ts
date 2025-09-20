@@ -31,7 +31,6 @@ export function useBufferedActivity(
                     createdAt: new Date(),
                 };
 
-                console.log("🔥 flushing buffer:", prev);
                 logActivity(challenge.id, log);
             }            
 
