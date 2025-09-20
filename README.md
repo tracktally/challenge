@@ -1,6 +1,7 @@
 # challenge app
 
 ```bash
+cd app
 npm install
 npm run dev -- --host
 ```
