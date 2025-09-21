@@ -14,6 +14,8 @@ export default function ProgressPage() {
 
   const logs = useActivities(challenge.id, 20);
 
+  if (!challenge || !user ) return <p>Loading data...</p>;
+
   return (
     <>
       <Counter

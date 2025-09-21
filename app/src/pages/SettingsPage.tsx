@@ -48,6 +48,8 @@ export default function SettingsPage() {
   };
 
 
+  if (!challenge || !user ) return <p>Loading data...</p>;
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Challenge Settings Card */}

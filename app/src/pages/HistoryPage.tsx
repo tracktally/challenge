@@ -28,6 +28,8 @@ export default function HistoryPage() {
             setDailyTotals(items);
         });
     }, [challenge?.id, user?.id]);
+
+    if (!challenge || !user ) return <p>Loading data...</p>;
     
     return (
         <div className="flex-1 overflow-y-auto p-1 mt-1">

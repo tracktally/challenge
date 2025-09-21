@@ -4,6 +4,8 @@ import type {Challenge, User} from "../types/domain.ts";
 export default function LeaderBoardPage() {
     const { challenge, users, user } = useOutletContext<{ challenge: Challenge, users: User[], user: User }>();
 
+    if (!challenge || !user ) return <p>Loading data...</p>;
+
     return (
         <div className="flex-1 overflow-y-auto p-1 mt-1">
         <h2 className="text-xl text-left font-semibold mb-4">Leaderboard</h2>

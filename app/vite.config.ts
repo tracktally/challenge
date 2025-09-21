@@ -15,9 +15,9 @@ export default defineConfig({
             registerType: "autoUpdate", // keeps SW fresh
             includeAssets: ["favicon.svg", "robots.txt", "icons/*"],
             manifest: {
-                name: "Pushup Challenge",
+                name: "Track Tally",
                 short_name: "Pushup",
-                description: "Daily pushup challenge with friends",
+                description: "Daily challenge with friends",
                 theme_color: "#2563eb",
                 background_color: "#ffffff",
                 display: "standalone",
