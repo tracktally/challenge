@@ -6,8 +6,9 @@ import {VitePWA} from "vite-plugin-pwa";
 // https://vite.dev/config/
 export default defineConfig({
     build: {
-        sourcemap: true,
-        minify: false,
+        // for debugging only
+        // sourcemap: true,
+        // minify: false,
     },
     plugins: [react(),
         tailwindcss(),
