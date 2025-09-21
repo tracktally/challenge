@@ -11,7 +11,6 @@ import {
 import { collection, query, where, getDocs } from "firebase/firestore";
 import type { User, Challenge } from "../types/domain.ts"
 
-import { v4 as uuidv4 } from "uuid";
 import { normalizeDate } from "./util.ts";
 
 
@@ -20,16 +19,11 @@ import { normalizeDate } from "./util.ts";
 // -------------------------------------
 
 export async function addChallenge(
-    data: Omit<Challenge, "id" | "publicUuid" | "adminUuid" | "createdAt" | "lastResetAt">
+    data: Omit<Challenge, "id" | "createdAt" | "lastResetAt">
 ) {
-    const idUser = uuidv4();
-    const idAdmin = uuidv4();
-
     const ref = collection(db, "challenges");
     const docRef = await addDoc(ref, {
         ...data,
-        publicUuid: idUser,
-        adminUuid: idAdmin,
         createdAt: serverTimestamp(),
         lastResetAt: serverTimestamp(),
         resetTimeStr: "00:00",
@@ -38,8 +32,6 @@ export async function addChallenge(
     return {
         ...data,
         id: docRef.id,
-        publicUuid: idUser,
-        adminUuid: idAdmin,
         lastResetAt: normalizeDate(data.lastResetAt),
         createdAt: normalizeDate(data.createdAt),
     };

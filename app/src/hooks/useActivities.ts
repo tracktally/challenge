@@ -13,7 +13,7 @@ export function useActivities(challengeId: string, lastN = 10,) {
   const [logs, setLogs] = useState<Activity[]>([]);
 
   useEffect(() => {
-    const ref = collection(db, "challenges", challengeId, "activity");
+    const ref = collection(db, "challenges", challengeId, "activities");
     const q = query(ref, orderBy("createdAt", "desc"), limit(lastN)); // newest first
     return onSnapshot(q, (snap) => {
       const list = snap.docs.map((doc) => ({

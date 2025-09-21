@@ -27,8 +27,6 @@ export function CreateChallengePage() {
                 challengeId: challenge.id,
                 name: name,
                 userId: "",
-                publicUuid: challenge.publicUuid,
-                adminUuid: challenge.adminUuid,
                 userName: "",
             });
 

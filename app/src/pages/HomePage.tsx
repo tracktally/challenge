@@ -14,11 +14,7 @@ export default function HomePage() {
     const location = useLocation() as { state?: { banner?: string } };
 
     function createUrl(c: LocalChallenge) {
-        if (c.adminUuid && c.adminUuid.length > 0) {
-            return `/challenge/${c.adminUuid}`;
-        } else {
-            return `/challenge/${c.publicUuid}`;
-        }
+        return `/challenge/${c.challengeId}`;
     }
 
     return (
