@@ -6,7 +6,7 @@ import { updateUser } from "../firebase/user.ts";
 import ThemePicker from "./ThemePicker.tsx";
 
 export default function SettingsPage() {
-  const { challenge, user } = useOutletContext<{ challenge: Challenge; user: User }>();
+  const { challenge, user, challengeUrl } = useOutletContext<{ challenge: Challenge; user: User, challengeUrl: string }>();
 
   const [name, setName] = useState(challenge?.name ?? "" );
   const [username, setUsername] = useState(user?.name ?? "");
@@ -15,6 +15,8 @@ export default function SettingsPage() {
   const [intervalHours, setIntervalHours] = useState<number | undefined>(challenge.interval_hrs);
   const [resetTime, setResetTime] = useState<string>(challenge?.resetTimeStr ?? ""); // HH:mm
   const [resetDate, setResetDate] = useState<Date|null>(challenge.lastResetAt); // yyyy-mm-dd
+
+  const shareUrl = window.location.origin + "/#" + challengeUrl; 
   
   function toValidDate(input: string | number | Date): Date | null {
     const d = new Date(input);
@@ -134,13 +136,12 @@ export default function SettingsPage() {
             </div>
             <input
               type="text"
-              value={window.location.origin + "/challenge/" + challenge.publicUuid}
+              value={shareUrl}
               className="input input-bordered w-full"
             />
           </label>
 
  
-
           {/* Save Button */}
           <div className="flex justify-end">
             <button type="submit" className="btn btn-primary">

@@ -1,4 +1,4 @@
-import {Outlet, Link, useParams, useLocation, useNavigate} from "react-router-dom";
+import {Outlet, Link, useParams, useLocation, useNavigate, generatePath} from "react-router-dom";
 import {useChallengeByUuid} from "../hooks/useChallenge"
 import {useLocalChallenges} from "../hooks/useLocalChallenges"
 import {useUser} from "../hooks/useUser"
@@ -33,17 +33,17 @@ export default function ChallengeLayout() {
 
     console.log("challenge layout with id, ", uuid);
     const challengeName = challenge?.name
-    const challengeUrl = "/challenge/" + uuid;
+    const challengeUrl = generatePath("/challenge/:uuid", {uuid: uuid});
 
     const isActive = (path: string) =>
-        location.pathname === `/challenge/${uuid}/${path}`;
+        location.pathname.includes(path);
 
     if (! localChallenge || !localChallenge.userId) {
         // create a new user and store challenge
         if (!location.pathname.includes("join")) {
             navigate("join")
         }
-         return <Outlet context={{challenge}}/>
+         return <Outlet context={{challenge, challengeUrl}}/>
     }
 
     
@@ -91,7 +91,7 @@ export default function ChallengeLayout() {
             </div>
             <div className="flex-1 p-4">
                 {/* Counter section */}
-                <Outlet context={{challenge, user, users, addReps, triggerCelebration}}/>
+                <Outlet context={{challenge, user, users, addReps, triggerCelebration, challengeUrl}}/>
             </div>
             <div className="dock">
                 <Link to={`${challengeUrl}/progress`}>

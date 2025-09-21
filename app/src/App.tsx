@@ -1,5 +1,5 @@
 // src/App.tsx
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ChallengeLayout from "./pages/ChallengeLayout";
 import ProgressPage from "./pages/ProgressPage";
@@ -12,6 +12,17 @@ import './App.css'
 import {CreateUserPage} from "./pages/CreateUserPage.tsx";
 
 function App() {
+    function NotFound() {
+      return (
+        <>
+        <div className="p-6">
+            Not found <br />
+             <a href="/" className="link">Back to home</a>
+            </div>
+        </>
+      );
+    }
+
     return (
         <>
             <Router>
@@ -27,9 +38,11 @@ function App() {
                         <Route path="join" element={<CreateUserPage />} />
                         <Route path="settings" element={<SettingsPage />} />
                     
-    
+                        <Route path="*" element={<NotFound />} />
                     </Route>
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
+                
             </Router>
         </>
     );
