@@ -32,8 +32,6 @@ function getResetInfo(challenge: Challenge, now: Date = new Date()): ResetInfo {
   const secondsTotal = (nextResetDate!.getTime() - lastResetDate!.getTime()) / 1000;
   const secondsPassed = (now.getTime() - lastResetDate.getTime()) / 1000;
 
-  console.log(secondsTotal, secondsPassed);
-
   return {
     secondsPassed,
     secondsTotal,
