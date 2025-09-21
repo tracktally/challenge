@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { incrementChallenge, markGoalReached, updateUser } from "../firebase/user.ts";
 import type { User, Challenge } from "../types/domain";
 import { useOutletContext } from "react-router-dom";
-import { normalizeDate } from "../firebase/util.ts";
+import { getResetDates, normalizeDate } from "../firebase/util.ts";
 
 interface CounterProps {
     challenge: Challenge;
@@ -12,7 +12,6 @@ interface CounterProps {
 }
 
 interface ResetInfo {
-  endDate: Date;
   secondsPassed: number;
   secondsTotal: number;
   hoursLeft: number;
@@ -20,25 +19,11 @@ interface ResetInfo {
   secondsLeft: number;
 }
 
+
 function getResetInfo(challenge: Challenge, now: Date = new Date()): ResetInfo {
-  const intervalHrs = challenge.interval_hrs ?? 24;
-  const resetTimeStr = challenge.resetTimeStr ?? "00:00";
-  const [h, m] = resetTimeStr.split(":").map(Number);
 
-  const yesterdayMidnight = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() - 1
-  );
-
-  const lastResetDate =
-    challenge.lastResetAt != null ?
-    normalizeDate(challenge.lastResetAt) : yesterdayMidnight;
-
-  const nextResetDate = new Date(lastResetDate);
-  nextResetDate.setHours(h, m, 0, 0);
-  nextResetDate.setHours(nextResetDate.getHours() + intervalHrs);
-
+  const {lastResetDate, nextResetDate} = getResetDates(challenge, now);
+  
   const msLeft = nextResetDate.getTime() - now.getTime();
   const hoursLeft = Math.floor(msLeft / (1000 * 60 * 60));
   const minutesLeft = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60));
@@ -48,7 +33,6 @@ function getResetInfo(challenge: Challenge, now: Date = new Date()): ResetInfo {
   const secondsPassed = secondsTotal - now.getTime() / 1000;
 
   return {
-    endDate: nextResetDate,
     secondsPassed,
     secondsTotal,
     hoursLeft,
