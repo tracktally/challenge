@@ -3,6 +3,7 @@ import type { User, Challenge } from "../types/domain.ts";
 import { useOutletContext } from "react-router-dom";
 import { updateChallenge } from "../firebase/challenge.ts";
 import { updateUser } from "../firebase/user.ts";
+import ThemePicker from "./ThemePicker.tsx";
 
 export default function SettingsPage() {
   const { challenge, user } = useOutletContext<{ challenge: Challenge; user: User }>();
@@ -148,6 +149,12 @@ export default function SettingsPage() {
           </div>
         </div>
       </form>
+        <div className="card bg-base-100 card-border">
+          <h2 className="card-title">Theme</h2>
+          <ThemePicker />    
+        </div>
+        {/* padding at the bottom */}
+        <div className="mb-30"></div>
     </div>
   );
 }
