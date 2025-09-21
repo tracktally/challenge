@@ -2,8 +2,6 @@
 export interface Challenge {
     id: string;
     name: string;
-    publicUuid: string;
-    adminUuid: string;
     interval_hrs: number;
     counter: number;
     goalCounterUser: number;

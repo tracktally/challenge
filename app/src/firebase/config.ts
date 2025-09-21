@@ -9,6 +9,14 @@ import {
     persistentMultipleTabManager, setDoc,
 } from "firebase/firestore"
 
+import {
+  getAuth,
+  setPersistence,
+  indexedDBLocalPersistence,
+  onAuthStateChanged,
+  signInAnonymously,
+} from "firebase/auth";
+
 const firebaseConfig = {
     apiKey: "AIzaSyAh_nLoOwMGCTR3PWCilmKRl9H9LmcLxDo",
     authDomain: "challenge-80397.firebaseapp.com",
@@ -18,6 +26,7 @@ const firebaseConfig = {
     appId: "1:128540730871:web:d6cbf1257b7a78fdc8baf2"
 };
 const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
 
 export const db = initializeFirestore(app, {
     localCache: persistentLocalCache({
@@ -25,4 +34,6 @@ export const db = initializeFirestore(app, {
     }),
 });
 
-
+onAuthStateChanged(auth, async (user) => {
+  if (!user) await signInAnonymously(auth);
+});

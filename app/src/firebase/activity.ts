@@ -14,9 +14,10 @@ import { normalizeDate } from "./util.ts";
 
 
 export async function logActivity(challengeId: string,
-    data: Omit<Activity, "id" | "createdAt">) {
-    const ref = collection(db, "challenges", challengeId, "activity");
+    data: Omit<Activity, "id" | "createdAt | userId | userName">) {
+    const ref = collection(db, "challenges", challengeId, "activities");
     const created = serverTimestamp();
+    console.log("logging", data);
     await addDoc(ref, {
         ...data,
         createdAt: created

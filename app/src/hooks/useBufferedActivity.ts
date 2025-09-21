@@ -31,6 +31,8 @@ export function useBufferedActivity(
                     createdAt: new Date(),
                 };
 
+                console.log("logging activity: ", user);
+
                 logActivity(challenge.id, log);
             }            
 

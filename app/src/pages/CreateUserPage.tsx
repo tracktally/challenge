@@ -51,8 +51,6 @@ export function CreateUserPage() {
                     name: challenge.name,
                     userId: user.id,
                     userName: name,
-                    publicUuid: challenge.publicUuid, // todo
-                    adminUuid: challenge.adminUuid,
                     url: ""
                 });
             }

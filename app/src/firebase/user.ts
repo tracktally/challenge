@@ -41,7 +41,9 @@ export async function updateUser(
 
 export async function incrementChallenge(challengeId: string, userId: string, inc: number) {
     const ref = doc(db, "challenges", challengeId, "users", userId);
-    await updateDoc(ref, { counter: increment(inc) });
+    await updateDoc(ref, { counter: increment(inc),
+                userId: userId                      
+     });
 
     const ref2 = doc(db, "challenges", challengeId);
     await updateDoc(ref2, { counter: increment(inc) });
@@ -49,7 +51,8 @@ export async function incrementChallenge(challengeId: string, userId: string, in
 
 export async function markGoalReached(challengeId: string, userId: string) {
     const ref = doc(db, "challenges", challengeId, "users", userId);
-    await updateDoc(ref, { goalReachedAt: serverTimestamp() });
+    await updateDoc(ref, { goalReachedAt: serverTimestamp()
+     });
 }
 
 export async function deleteUser(challengeId: string, userId: string) {

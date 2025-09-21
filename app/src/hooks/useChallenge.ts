@@ -4,59 +4,7 @@ import { db } from "../firebase/config";
 import type { Challenge, User } from "../types/domain";
 import { normalizeDate } from "../firebase/util";
 
-// fetch a challenge by uuid or id
-
-export function useChallengeByUuid(uuid: string) {
-  const [challenge, setChallenge] = useState<Challenge | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const ref = collection(db, "challenges");
-
-    // Query for publicUuid
-    const qPublic = query(ref, where("publicUuid", "==", uuid));
-    const unsubPublic = onSnapshot(qPublic, (snap) => {
-      if (!snap.empty) {
-        const doc = snap.docs[0];
-        const data = doc.data() as Challenge;
-        // TODO: We should not leak admin UUID here!
-        setChallenge({ 
-           ...data,
-          id: doc.id,
-          createdAt: normalizeDate(data.createdAt),
-          lastResetAt: normalizeDate(data.lastResetAt),
-         });
-        setIsAdmin(false);
-      }
-    });
-
-    // Query for adminUuid
-    const qAdmin = query(ref, where("adminUuid", "==", uuid));
-    const unsubAdmin = onSnapshot(qAdmin, (snap) => {
-      if (!snap.empty) {
-        const doc = snap.docs[0];
-        const data = doc.data() as Challenge;
-
-        setChallenge({ 
-           ...data,
-          id: doc.id,
-          createdAt: normalizeDate(data.createdAt),
-          lastResetAt: normalizeDate(data.lastResetAt),
-         });
-         
-        setIsAdmin(true);
-      }
-    });
-
-    return () => {
-      unsubPublic();
-      unsubAdmin();
-    };
-  }, [uuid]);
-
-  return { challenge, isAdmin };
-}
-
+// fetch a challenge by id
 export function useChallenge(challengeId: string) {
   const [challenge, setChallenge] = useState<Challenge | null>(null);
 

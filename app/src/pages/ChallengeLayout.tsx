@@ -1,5 +1,5 @@
 import {Outlet, Link, useParams, useLocation, useNavigate, generatePath} from "react-router-dom";
-import {useChallengeByUuid} from "../hooks/useChallenge"
+import {useChallenge} from "../hooks/useChallenge"
 import {useLocalChallenges} from "../hooks/useLocalChallenges"
 import {useUser} from "../hooks/useUser"
 import {useUsers} from "../hooks/useUsers"
@@ -19,7 +19,7 @@ export default function ChallengeLayout() {
         setTimeout(() => setCelebrationMessage(null), timeout * 1000);
     };
 
-    const {challenge, isAdmin} = useChallengeByUuid(uuid ?? "");
+    const challenge = useChallenge(uuid ?? "");
     const localChallenge = getChallenge(challenge?.id ?? "");
 
     const user = useUser(challenge?.id ?? "", localChallenge?.userId ?? "");
