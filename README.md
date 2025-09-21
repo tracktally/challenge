@@ -1,5 +1,8 @@
 # challenge app
 
+- master: https://tracktally.github.io/
+- develop: https://tracktally-dev.github.io/
+
 ```bash
 cd app
 npm install
