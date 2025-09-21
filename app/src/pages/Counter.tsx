@@ -11,6 +11,53 @@ interface CounterProps {
     triggerCelebration: (message: string, sec: number) => void;
 }
 
+interface ResetInfo {
+  endDate: Date;
+  secondsPassed: number;
+  secondsTotal: number;
+  hoursLeft: number;
+  minutesLeft: number;
+  secondsLeft: number;
+}
+
+function getResetInfo(challenge: Challenge, now: Date = new Date()): ResetInfo {
+  const intervalHrs = challenge.interval_hrs ?? 24;
+  const resetTimeStr = challenge.resetTimeStr ?? "00:00";
+  const [h, m] = resetTimeStr.split(":").map(Number);
+
+  const yesterdayMidnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() - 1
+  );
+
+  const lastResetDate =
+    challenge.lastResetAt != null ?
+    normalizeDate(challenge.lastResetAt) : yesterdayMidnight;
+
+  const nextResetDate = new Date(lastResetDate);
+  nextResetDate.setHours(h, m, 0, 0);
+  nextResetDate.setHours(nextResetDate.getHours() + intervalHrs);
+
+  const msLeft = nextResetDate.getTime() - now.getTime();
+  const hoursLeft = Math.floor(msLeft / (1000 * 60 * 60));
+  const minutesLeft = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+  const secondsLeft = Math.floor((msLeft % (1000 * 60)) / 1000);
+
+  const secondsTotal = (lastResetDate!.getTime() - nextResetDate?.getTime()) / 1000;
+  const secondsPassed = secondsTotal - now.getTime() / 1000;
+
+  return {
+    endDate: nextResetDate,
+    secondsPassed,
+    secondsTotal,
+    hoursLeft,
+    minutesLeft,
+    secondsLeft,
+  };
+}
+
+
 export default function Counter({
     challenge,
     user,
@@ -26,28 +73,8 @@ export default function Counter({
         return () => clearInterval(interval);
     }, []);
 
-    
-    let endDate = new Date(now);
-    let secondsInReset;
-    let secondPassed;
-    if (challenge.lastResetAt != null && challenge.interval_hrs != null &&
-        challenge.interval_hrs != 0) {
-        endDate = new Date(challenge.lastResetAt.getTime() + challenge.interval_hrs * 3600 * 1000);
-        secondPassed = Math.floor((now.getTime() - challenge.lastResetAt.getTime()) / 1000);
-        secondsInReset = challenge.interval_hrs * 3600;
-    } else {
-        endDate.setHours(24, 0, 0, 0);
-        secondsInReset = 24 * 60 * 60;
-        secondPassed = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    }            
+    const reset = getResetInfo(challenge, now);
 
-
-    const ms_left = endDate.getTime() - now.getTime();
-    const hours_left = Math.floor(ms_left / (1000 * 60 * 60));
-    const minutes_left = Math.floor((ms_left % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds_left = Math.floor((ms_left % (1000 * 60)) / 1000);
-
-    
     useEffect(() => {
         if (user && user.counter !== count) {
             setCount(user.counter);
@@ -128,17 +155,17 @@ export default function Counter({
                 <div className="flex justify-between">
                     <span>Time left</span>
                     <span>
-                        <span className={`countdown text-bold${hours_left < 2 ? " text-red-600" : ""}`}>
-                            <span style={{ "--value": hours_left } as React.CSSProperties}>{hours_left}</span>:
-                            <span style={{ "--value": minutes_left } as React.CSSProperties}>{minutes_left}</span>:
-                            <span style={{ "--value": seconds_left } as React.CSSProperties}>{seconds_left}</span>
+                        <span className={`countdown text-bold${reset.hoursLeft < 2 ? " text-red-600" : ""}`}>
+                            <span style={{ "--value": reset.hoursLeft } as React.CSSProperties}>{reset.hoursLeft}</span>:
+                            <span style={{ "--value": reset.minutesLeft } as React.CSSProperties}>{reset.minutesLeft}</span>:
+                            <span style={{ "--value": reset.secondsLeft } as React.CSSProperties}>{reset.secondsLeft}</span>
                         </span>
                     </span>
                 </div>
                 <progress
                     className="progress progress w-full h-5"
-                    value={secondPassed}
-                    max={secondsInReset}
+                    value={reset.secondsPassed}
+                    max={reset.secondsTotal}
                 />
 
                 {/* Buttons */}
