@@ -26,7 +26,7 @@ export default function HomePage() {
             <main className="flex flex-col min-h-screen bg-base-200">
                 <div className="navbar bg-base-200 shadow px-4 ">
                     <div className="flextext-center">
-                        <h1 className="text-lg font-bold truncate">Challenge</h1>
+                        <h1 className="text-lg font-bold truncate">Track Tally.</h1>
                     </div>
                 </div>
                 <div className="p-6 text-center">
