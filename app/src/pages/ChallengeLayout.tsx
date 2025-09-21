@@ -91,7 +91,7 @@ export default function ChallengeLayout() {
             </div>
             <div className="flex-1 p-4">
                 {/* Counter section */}
-                <Outlet context={{challenge, user, users, addReps}}/>
+                <Outlet context={{challenge, user, users, addReps, triggerCelebration}}/>
             </div>
             <div className="dock">
                 <Link to={`${challengeUrl}/progress`}>
