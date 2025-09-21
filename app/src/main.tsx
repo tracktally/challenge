@@ -8,17 +8,17 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/sw.js")
-      .then(() => console.log("✅ Service Worker registered"))
-      .catch(err => console.error("❌ SW registration failed:", err));
+      .then(() => console.log("Service Worker registered"))
+      .catch(err => console.error("SW registration failed:", err));
   });
 }
 
 registerSW({
   onNeedRefresh() {
-    console.log("🔄 New version available. Refresh to update.");
+    console.log("New version available. Refresh to update.");
   },
   onOfflineReady() {
-    console.log("📴 App ready to work offline");
+    console.log("App ready to work offline");
   },
 });
 

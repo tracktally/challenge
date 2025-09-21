@@ -20,7 +20,7 @@ export default defineConfig({
                 short_name: "Pushup",
                 description: "Daily challenge with friends",
                 theme_color: "#2563eb",
-                background_color: "#ffffff",
+                background_color: "#113aaaff",
                 display: "standalone",
                 start_url: "/",
                 icons: [

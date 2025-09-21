@@ -1,7 +1,7 @@
 {
-  "name": "Pushup Challenge",
-  "short_name": "Pushup",
-  "description": "Daily pushup challenge with friends",
+  "name": "Track Tally",
+  "short_name": "Track Tally",
+  "description": "Daily challenge with friends",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
