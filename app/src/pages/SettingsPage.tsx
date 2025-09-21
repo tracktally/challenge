@@ -124,20 +124,17 @@ export default function SettingsPage() {
             />
           </label>
 
-          {/* for now we dont expose these */ }
-          {/* <label className="form-control w-full">
+          
+          <label className="form-control w-full">
             <div className="label">
-              <span className="label-text">Interval (hours)</span>
+              <span className="label-text">Invite Link</span>
             </div>
             <input
-              type="number"
-              value={intervalHours ?? ""}
-              onChange={(e) => setIntervalHours(Number(e.target.value))}
-              placeholder="e.g. 24"
+              type="text"
+              value={window.location.origin + "/challenge/" + challenge.publicUuid}
               className="input input-bordered w-full"
-              min={1}
             />
-          </label> */}
+          </label>
 
  
 
