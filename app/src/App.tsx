@@ -10,6 +10,8 @@ import {CreateChallengePage} from "./pages/CreateChallengePage.tsx";
 
 import './App.css'
 import {CreateUserPage} from "./pages/CreateUserPage.tsx";
+import PWAPrompt from 'react-ios-pwa-prompt'
+
 
 function App() {
     function NotFound() {
@@ -44,6 +46,7 @@ function App() {
                 </Routes>
                 
             </Router>
+            <PWAPrompt />
         </>
     );
 }
