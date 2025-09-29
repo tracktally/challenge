@@ -48,7 +48,7 @@ export function useActivities(challengeId: string, lastN = 10,) {
 
     //   setLogs(list);
     });
-  }, [challengeId]);
+  }, [challengeId, lastN]);
 
   return logs;
 }
