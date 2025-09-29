@@ -11,8 +11,6 @@ import {
 import { collection, query, where, getDocs } from "firebase/firestore";
 import type { User, Challenge } from "../types/domain.ts"
 
-import { v4 as uuidv4 } from "uuid";
-
 // -------------------------------------
 // User
 // -------------------------------------
@@ -23,6 +21,7 @@ export async function addUser(
     const ref = collection(db, "challenges", challengeId, "users");
     const docRef = await addDoc(ref, {
         ...data,
+        lastActivityAt: serverTimestamp(),
     });
     return {
         id: docRef.id,
@@ -42,7 +41,9 @@ export async function updateUser(
 export async function incrementChallenge(challengeId: string, userId: string, inc: number) {
     const ref = doc(db, "challenges", challengeId, "users", userId);
     await updateDoc(ref, { counter: increment(inc),
-                userId: userId                      
+                userId: userId,
+                lastActivityAt: serverTimestamp()
+
      });
 
     const ref2 = doc(db, "challenges", challengeId);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
 import type { User } from "../types/domain";
+import { normalizeDate } from "../firebase/util";
 
 // hook for user
 
@@ -14,7 +15,9 @@ export function useUser(challengeId: string, userId: string) {
     const ref = doc(db, "challenges", challengeId, "users", userId);
     return onSnapshot(ref, (snap) => {
       if (snap.exists()) {
-        setUser({ id: snap.id, ...(snap.data() as Omit<User, "id">) });
+        setUser({ id: snap.id, ...(snap.data() as Omit<User, "id">),
+          lastActivityAt: normalizeDate(snap.data().lastActivityAt)
+         });
       } else {
         setUser(null);
       }

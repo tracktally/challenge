@@ -1,10 +1,17 @@
 import {useOutletContext} from "react-router-dom";
 import type {Challenge, User} from "../types/domain.ts";
+import { normalizeDate } from "../firebase/util.ts";
+import { useState } from "react";
 
 export default function LeaderBoardPage() {
     const { challenge, users, user } = useOutletContext<{ challenge: Challenge, users: User[], user: User }>();
+    const [showAllUsers, setShowAllUsers] = useState(false);
+    
 
     if (!challenge || !user ) return <p>Loading data...</p>;
+
+    const inactivityCutOff = new Date();
+    inactivityCutOff.setDate(inactivityCutOff.getDate() - 3);
 
     return (
         <div className="flex-1 overflow-y-auto p-1 mt-1">
@@ -27,7 +34,10 @@ export default function LeaderBoardPage() {
                     <tbody>
                     {
                         [...users]
-
+                        .map(u => ({...u, lastActivityAt: normalizeDate(u.lastActivityAt)}))                         
+                        .filter(u => showAllUsers  || 
+                            (u.lastActivityAt!= null &&
+                            u.lastActivityAt >= inactivityCutOff))
                         //    SORT by goalReachedAt (earliest first), then by counter (highest first)
                             .sort((a, b) => {
                                 const aTime = a.goalReachedAt
@@ -95,6 +105,15 @@ export default function LeaderBoardPage() {
 
                     </tbody>
                 </table>
+                <button
+                    type="button"
+                    className="btn btn-xs btn-ghost"
+                    onClick={() => setShowAllUsers(s => !s)}
+                    aria-pressed={showAllUsers}
+                    >
+                    {showAllUsers ? "Hide inactive" : "Show all users"}
+                    </button>
+
             </div>
             {/* padding at the bottom */}
             <div className="mb-20"></div>
