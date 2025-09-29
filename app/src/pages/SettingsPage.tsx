@@ -2,59 +2,82 @@ import { useState } from "react";
 import type { User, Challenge } from "../types/domain.ts";
 import { useOutletContext } from "react-router-dom";
 import { updateChallenge } from "../firebase/challenge.ts";
-import { updateUser } from "../firebase/user.ts";
 import ThemePicker from "./ThemePicker.tsx";
 
 export default function SettingsPage() {
-  const { challenge, user, challengeUrl } = useOutletContext<{ challenge: Challenge; user: User, challengeUrl: string }>();
+  const { challenge, user, challengeUrl } = useOutletContext<{
+    challenge: Challenge; user: User; challengeUrl: string;
+  }>();
 
-  const [name, setName] = useState(challenge?.name ?? "" );
-  const [username, setUsername] = useState(user?.name ?? "");
-  const [challengeGoal, setChallengeGoal] = useState<number | undefined>( challenge.goalCounterChallenge);
+  const [name, setName] = useState(challenge?.name ?? "");
+  const [challengeGoal, setChallengeGoal]
+    = useState<number | undefined>(challenge.goalCounterChallenge);
   const [userGoal, setUserGoal] = useState<number | undefined>(challenge.goalCounterUser);
-  const [intervalHours, setIntervalHours] = useState<number | undefined>(challenge.interval_hrs);
-  const [resetTime, setResetTime] = useState<string>(challenge?.resetTimeStr ?? ""); // HH:mm
-  const [resetDate, setResetDate] = useState<Date|null>(challenge.lastResetAt); // yyyy-mm-dd
+  const [resetTime, setResetTime] = useState<string>(challenge?.resetTimeStr ?? "");
+  const [copiedMsg, setCopiedMsg] = useState<string | null>(null);
 
-  const shareUrl = window.location.origin + "/#" + challengeUrl; 
-  
-  function toValidDate(input: string | number | Date): Date | null {
-    const d = new Date(input);
-    if (isNaN(d.getTime())) {
-      return null; // invalid date
-    }
-    return d;
-  }
+  if (!user || !challenge) return <div>Loading...</div>;
 
-  if (!user || !challenge) {
-  return <div>Loading...</div>;
-}
+  const shareUrl = `${window.location.origin}/#${challengeUrl}`;
 
   const handleSaveChallenge = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({
-      name,
-      challengeGoal,
-      userGoal,
-      resetDate,
-      intervalHours,
-      resetTime,
-    });
-
     updateChallenge(challenge.id, {
-      name: name,
+      name,
       goalCounterChallenge: challengeGoal,
       goalCounterUser: userGoal,
-      // interval_hrs: intervalHours,
       resetTimeStr: resetTime,
-    }); 
+    });
   };
 
+  async function copyToClipboard(text: string, label: string) {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      setCopiedMsg(`${label} copied`);
+      setTimeout(() => setCopiedMsg(null), 1600);
+    } catch {
+      setCopiedMsg(`Could not copy ${label}`);
+      setTimeout(() => setCopiedMsg(null), 1600);
+    }
+  }
 
-  if (!challenge || !user ) return <p>Loading data...</p>;
+  function makeCopyHandlers(value: string, label: string) {
+    return {
+      onClick: (e: React.MouseEvent<HTMLInputElement>) => {
+        (e.currentTarget as HTMLInputElement).select();
+        copyToClipboard(value, label);
+      },
+      onFocus: (e: React.FocusEvent<HTMLInputElement>) => {
+        e.currentTarget.select();
+        copyToClipboard(value, label);
+      },
+    };
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+
+      {/* Toast (DaisyUI) */}
+      {copiedMsg && (
+        <div className="toast toast-top toast-end z-50">
+          <div className="alert alert-success">
+            <span>{copiedMsg}</span>
+          </div>
+        </div>
+      )}
+
       {/* Challenge Settings Card */}
       <form onSubmit={handleSaveChallenge} className="card bg-base-100 card-border">
         <div className="card-body p-4 space-y-3">
@@ -62,9 +85,7 @@ export default function SettingsPage() {
 
           {/* Challenge Name */}
           <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Name</span>
-            </div>
+            <div className="label"><span className="label-text">Name</span></div>
             <input
               type="text"
               value={name}
@@ -76,9 +97,7 @@ export default function SettingsPage() {
 
           {/* Challenge Goal */}
           <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Challenge Goal</span>
-            </div>
+            <div className="label"><span className="label-text">Challenge Goal</span></div>
             <input
               type="number"
               value={challengeGoal ?? ""}
@@ -91,9 +110,7 @@ export default function SettingsPage() {
 
           {/* User Goal */}
           <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">User Goal</span>
-            </div>
+            <div className="label"><span className="label-text">User Goal</span></div>
             <input
               type="number"
               value={userGoal ?? ""}
@@ -104,23 +121,9 @@ export default function SettingsPage() {
             />
           </label>
 
+          {/* Reset Time of Day */}
           <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Last Reset Date</span>
-            </div>
-            <input
-              type="text"
-              disabled={true}
-              value={resetDate ? resetDate.toString() : ""}
-              className="input input-bordered w-full"
-            />
-          </label>
-
-        {/* Reset Time of Day */}
-          <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Reset Time</span>
-            </div>
+            <div className="label"><span className="label-text">Reset Time</span></div>
             <input
               type="time"
               value={resetTime}
@@ -129,33 +132,51 @@ export default function SettingsPage() {
             />
           </label>
 
-          
+          {/* Invite Link (read-only, copy on click/focus) */}
           <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Invite Link</span>
-            </div>
+            <div className="label"><span className="label-text">Invite Link</span></div>
             <input
               type="text"
               value={shareUrl}
-              className="input input-bordered w-full"
+              readOnly
+              className="input input-bordered w-full cursor-pointer select-all"
+              {...makeCopyHandlers(shareUrl, "Invite link")}
             />
+            <div className="label">
+              <span className="label-text-alt">Click or focus to copy</span>
+            </div>
           </label>
 
- 
+          {/* Challenge ID (read-only, copy on click/focus) */}
+          <label className="form-control w-full">
+            <div className="label"><span className="label-text">Challenge ID</span></div>
+            <input
+              type="text"
+              value={challenge.id}
+              readOnly
+              className="input input-bordered w-full cursor-pointer select-all"
+              {...makeCopyHandlers(challenge.id, "Challenge ID")}
+            />
+            <div className="label">
+              <span className="label-text-alt">Click or focus to copy</span>
+            </div>
+          </label>
+
           {/* Save Button */}
           <div className="flex justify-end">
-            <button type="submit" className="btn btn-primary">
-              Update
-            </button>
+            <button type="submit" className="btn btn-primary">Update</button>
           </div>
         </div>
       </form>
-        <div className="card bg-base-100 card-border">
-          <h2 className="card-title">Theme</h2>
-          <ThemePicker />    
+
+      <div className="card bg-base-100 card-border">
+        <h2 className="card-title p-4">Theme</h2>
+        <div className="px-4 pb-4">
+          <ThemePicker />
         </div>
-        {/* padding at the bottom */}
-        <div className="mb-30"></div>
+      </div>
+
+      <div className="mb-30"></div>
     </div>
   );
 }
