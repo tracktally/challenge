@@ -10,12 +10,14 @@ export default function HistoryPage() {
         user: User;
     }>();
     // Read last 7 days from dailyStats
-    const [dailyTotals, setDailyTotals] = useState<{date: string; teamTotal: number; userTotal: number}[]>([]);
+    const [dailyTotals, setDailyTotals] = useState<{date: string; teamTotal: number; userTotal: number,
+        goalCounterUser: number, goalCounterChallenge: number
+    }[]>([]);
 
     useEffect(() => {
         if (!challenge?.id || !user?.id) return;
         const ref = collection(db, "challenges", challenge.id, "dailyStats");
-        const q = query(ref, orderBy("date", "desc"), limit(7));
+        const q = query(ref, orderBy("date", "desc"), limit(30));
         return onSnapshot(q, (snap) => {
             const items = snap.docs.map((doc) => {
                 const data = doc.data() as any;
@@ -23,7 +25,9 @@ export default function HistoryPage() {
                 const label = dt.toLocaleDateString();
                 const userTotal = data.users?.[user.id] ?? 0;
                 const teamTotal = data.teamTotal ?? 0;
-                return { date: label, teamTotal, userTotal };
+                const goalCounterUser =  data.goalCounterUser ?? challenge.goalCounterUser;
+                const goalCounterChallenge =  data.goalCounterChallenge ?? challenge.goalCounterChallenge;
+                return { date: label, teamTotal, userTotal, goalCounterUser, goalCounterChallenge };
             });
             setDailyTotals(items);
         });
@@ -49,10 +53,10 @@ export default function HistoryPage() {
                             <tr key={day.date} className="hover">
                                 <td className="px-4 py-2 font-semibold">{day.date}</td>
                                 <td className="px-4 py-2 text-right font-semibold text-primary">
-                                    {day.userTotal}
+                                    {day.userTotal} / {day.goalCounterUser}
                                 </td>
                                 <td className="px-4 py-2 text-right font-semibold text-accent">
-                                    {day.teamTotal}
+                                    {day.teamTotal} / {day.goalCounterChallenge}
                                 </td>
                             </tr>
                         ))}

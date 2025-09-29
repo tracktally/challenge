@@ -28,7 +28,7 @@ export interface Activity {
   createdAt: Date;
 }
 
-export interface DailyStat {
+export interface DailyStats {
     id: string; // dateId YYYYMMDD
     date: Date; // actual date
     teamTotal: number;

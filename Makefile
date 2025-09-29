@@ -4,7 +4,7 @@ dev:
 	cd app; npm run dev -- --host
 
 login:
-	firebase login
+	cd firebase; firebase login
 
 firestore:
-	firebase deploy --only firestore:rules
+	cd firebase; firebase deploy --only firestore:rules

@@ -28,6 +28,11 @@ service cloud.firestore {
         allow get, list, create, update:  if signedIn(request);
         allow delete: if false;
       }
+
+      match /dailyStats/{id} {
+        allow get, list:  if signedIn(request);
+        allow delete, create, update: if false;
+      }
     }
   }
 }
