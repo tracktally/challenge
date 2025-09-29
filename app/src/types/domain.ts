@@ -15,6 +15,7 @@ export interface User {
     id: string;
     name: string;
     counter: number;
+    lastActivityAt: Date | null;
     goalReachedAt: Date | null;
     goalPartialReachedAt: Date | null; // for things like partial strike
 }
@@ -25,4 +26,14 @@ export interface Activity {
   userName: string;
   amount: number;
   createdAt: Date;
+}
+
+export interface DailyStat {
+    id: string; // dateId YYYYMMDD
+    date: Date; // actual date
+    teamTotal: number;
+    users: Record<string, number>; // userId -> total
+    createdAt: Date;
+    goalCounterUser: number;
+    goalCounterChallenge: number;
 }
