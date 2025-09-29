@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { incrementChallenge, markGoalReached, updateUser } from "../firebase/user.ts";
 import type { User, Challenge } from "../types/domain";
 import { useOutletContext } from "react-router-dom";
@@ -71,18 +71,39 @@ export default function Counter({
         }
     }, [challenge]);
 
+
+    
+    /* vibrate on team update */
+    // const prevChallengeCounter = useRef(challenge?.counter);
+    // useEffect(() => {
+    //     if (prevChallengeCounter.current !== undefined 
+    //         && prevChallengeCounter.current !== challenge.counter) {
+    //             console.log(navigator.vibrate);
+    //         if (navigator.vibrate) {
+    //             navigator.vibrate(50);
+    //         }
+    //     }
+    //     prevChallengeCounter.current = challenge.counter;
+    // }, [challenge.counter]);
+
     const inc = (n: number) => {
         const newCount = count + n;
         setCount(newCount);
 
         if (newCount >= challenge.goalCounterUser && !user.goalReachedAt) {
             triggerCelebration("Awesome! You made it", 3);
+            if (navigator.vibrate) {
+                navigator.vibrate(2000);
+            }
             // markGoalReached(challenge.id, user.id);
             updateUser(challenge.id, user.id, { goalReachedAt: new Date() });
         }
 
         if (newCount >= challenge.goalCounterUser / 2 && !user.goalPartialReachedAt) {
             triggerCelebration("Keep it up. Half way", 3);
+            if (navigator.vibrate) {
+                navigator.vibrate(1000);
+            }
             // markGoalReached(challenge.id, user.id);
             updateUser(challenge.id, user.id, { goalPartialReachedAt: new Date() });
         }
