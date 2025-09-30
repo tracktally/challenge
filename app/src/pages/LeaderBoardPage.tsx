@@ -11,7 +11,7 @@ export default function LeaderBoardPage() {
   }>();
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [activeTab, setActiveTab] = useState<
-    "progress" | "strikes" | "reps"
+    "progress" | "streaks" | "reps"
   >("progress");
 
 
@@ -47,11 +47,11 @@ export default function LeaderBoardPage() {
         if (!aTime && bTime) return 1;
         return b.counter - a.counter;
       });
-    } else if (activeTab === "strikes") {
+    } else if (activeTab === "streaks") {
       arr.sort((a, b) => {
-        const fullDiff = (b.fullStrike ?? 0) - (a.fullStrike ?? 0);
+        const fullDiff = (b.fullStreak ?? 0) - (a.fullStreak ?? 0);
         if (fullDiff !== 0) return fullDiff;
-        return (b.partialStrike ?? 0) - (a.partialStrike ?? 0);
+        return (b.partialStreak ?? 0) - (a.partialStreak ?? 0);
       });
     } else if (activeTab === "reps") {
       arr.sort((a, b) => ((b.totalCounter ?? 0) + b.counter) 
@@ -80,7 +80,7 @@ export default function LeaderBoardPage() {
           </div>
           <div className="stat-value">
             <span className="badge badge-primary text-lg px-3">
-              {user.partialStrike ?? 0}
+              {user.partialStreak ?? 0}
             </span>
           </div>
         </div>
@@ -90,11 +90,11 @@ export default function LeaderBoardPage() {
           data-tip="Days you hit your full goal"
         >
           <div className="stat-title flex items-center gap-1 text-sm">
-            <span>💯</span> <span>Strike</span>
+            <span>💯</span> <span>Streak</span>
           </div>
           <div className="stat-value">
             <span className="badge badge-success text-lg px-3">
-              {user.fullStrike ?? 0}
+              {user.fullStreak ?? 0}
             </span>
           </div>
         </div>
@@ -131,9 +131,9 @@ export default function LeaderBoardPage() {
           type="radio"
           name="leaderboard-tabs"
           className="tab"
-          aria-label="Strikes"
-          checked={activeTab === "strikes"}
-          onChange={() => setActiveTab("strikes")}
+          aria-label="Streaks"
+          checked={activeTab === "streaks"}
+          onChange={() => setActiveTab("streaks")}
         />
         <input
           type="radio"
@@ -157,8 +157,8 @@ export default function LeaderBoardPage() {
               {activeTab === "progress" && (
                 <th className="text-right">Progress</th>
               )}
-              {activeTab === "strikes" && (
-                <th className="text-right">Strikes</th>
+              {activeTab === "streaks" && (
+                <th className="text-right">Streaks</th>
               )}
               {activeTab === "reps" && (
                 <th className="text-right">All Time Reps</th>
@@ -235,14 +235,14 @@ export default function LeaderBoardPage() {
                     </td>
                   )}
 
-                  {activeTab === "strikes" && (
+                  {activeTab === "streaks" && (
                     <td className="text-right">
                       <div className="flex gap-2 justify-end">
                         <span className="badge badge-primary text-sm">
-                          🌗 {u.partialStrike ?? 0}
+                          🌗 {u.partialStreak ?? 0}
                         </span>
                         <span className="badge badge-success text-sm">
-                          💯 {u.fullStrike ?? 0}
+                          💯 {u.fullStreak ?? 0}
                         </span>
                       </div>
                     </td>

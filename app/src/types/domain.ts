@@ -18,15 +18,15 @@ export interface User {
     counter: number;
     lastActivityAt: Date | null;
     goalReachedAt: Date | null;
-    goalPartialReachedAt: Date | null; // for things like partial strike
+    goalPartialReachedAt: Date | null; // for things like partial streak
     
     // stats
-    partialStrike?: number;
-    fullStrike?: number;   
+    partialStreak?: number;
+    fullStreak?: number;   
     totalCounter?: number;    
 
-    bestPartialStrike?: number;
-    bestFullStrike?: number;   
+    bestPartialStreak?: number;
+    bestFullStreak?: number;   
     
 
 
