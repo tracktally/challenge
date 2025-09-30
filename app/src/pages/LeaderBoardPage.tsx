@@ -45,7 +45,19 @@ export default function LeaderBoardPage() {
         if (aTime && bTime) return aTime - bTime;
         if (aTime && !bTime) return -1;
         if (!aTime && bTime) return 1;
-        return b.counter - a.counter;
+        
+        if (a.counter !== b.counter) {
+          return b.counter - a.counter;
+        }
+
+        if (a.counter !== b.counter) {
+          return b.counter - a.counter;
+        }
+
+        const aAct = a.lastActivityAt?.getTime() ?? 0;
+        const bAct = b.lastActivityAt?.getTime() ?? 0;
+        return bAct - aAct;
+        
       });
     } else if (activeTab === "streaks") {
       arr.sort((a, b) => {
