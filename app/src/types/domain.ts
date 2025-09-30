@@ -18,6 +18,18 @@ export interface User {
     lastActivityAt: Date | null;
     goalReachedAt: Date | null;
     goalPartialReachedAt: Date | null; // for things like partial strike
+    
+    // stats
+    partialStrike?: number;
+    fullStrike?: number;   
+    totalCounter?: number;    
+
+    bestPartialStrike?: number;
+    bestFullStrike?: number;   
+    
+
+
+
 }
 
 export interface Activity {
