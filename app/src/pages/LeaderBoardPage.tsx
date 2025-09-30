@@ -17,7 +17,7 @@ export default function LeaderBoardPage() {
 
 
   const inactivityCutOff = new Date();
-  inactivityCutOff.setDate(inactivityCutOff.getDate() - 3);
+  inactivityCutOff.setDate(inactivityCutOff.getDate() - 2);
 
   const filteredUsers = useMemo(() => {
     let arr = [...users].map((u) => ({
