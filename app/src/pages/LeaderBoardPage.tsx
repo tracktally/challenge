@@ -17,7 +17,7 @@ export default function LeaderBoardPage() {
 
 
   const inactivityCutOff = new Date();
-  inactivityCutOff.setDate(inactivityCutOff.getDate() - 2);
+  inactivityCutOff.setDate(inactivityCutOff.getDate() - (challenge?.cutOffDays ?? 3));
 
   const filteredUsers = useMemo(() => {
     let arr = [...users].map((u) => ({
@@ -30,8 +30,12 @@ export default function LeaderBoardPage() {
     arr = arr.filter(
       (u) =>
         showAllUsers ||
-        (u.lastActivityAt != null && u.lastActivityAt >= inactivityCutOff)
+        (u.lastActivityAt != null && u.lastActivityAt > inactivityCutOff)
     );
+
+    for(let u of arr) {
+        console.log("last:", u.lastActivityAt, "\ncut:", inactivityCutOff, challenge?.cutOffDays);
+    }
 
     // Sorting depends on tab
     if (activeTab === "progress") {

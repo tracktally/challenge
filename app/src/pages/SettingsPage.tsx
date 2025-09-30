@@ -15,6 +15,7 @@ export default function SettingsPage() {
   const [userGoal, setUserGoal] = useState<number | undefined>(challenge.goalCounterUser);
   const [resetTime, setResetTime] = useState<string>(challenge?.resetTimeStr ?? "");
   const [copiedMsg, setCopiedMsg] = useState<string | null>(null);
+  const [cutOffDays, setCutOffDays] = useState<number | undefined>(challenge.cutOffDays ?? 3);
 
   if (!user || !challenge) return <div>Loading...</div>;
 
@@ -23,10 +24,11 @@ export default function SettingsPage() {
   const handleSaveChallenge = (e: React.FormEvent) => {
     e.preventDefault();
     updateChallenge(challenge.id, {
-      name,
+      name: name,
       goalCounterChallenge: challengeGoal,
       goalCounterUser: userGoal,
       resetTimeStr: resetTime,
+      cutOffDays: cutOffDays,
     });
   };
 
@@ -118,6 +120,19 @@ export default function SettingsPage() {
               placeholder="e.g. 10"
               className="input input-bordered w-full"
               min={1}
+            />
+          </label>
+
+           {/* Cut Off */}
+          <label className="form-control w-full">
+            <div className="label"><span className="label-text">Cut Off Days</span></div>
+            <input
+              type="number"
+              value={cutOffDays}
+              onChange={(e) => setCutOffDays(Number(e.target.value))}
+              placeholder="e.g. 3"
+              className="input input-bordered w-full"
+              min={0}
             />
           </label>
 

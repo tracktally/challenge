@@ -9,6 +9,7 @@ export interface Challenge {
     createdAt: Date;
     lastResetAt: Date;
     resetTimeStr: string   // HH:mm
+    cutOffDays: number; // days of inactivity before marked inactive
 }
 
 export interface User {
