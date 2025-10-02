@@ -20,13 +20,14 @@ function dateLabel(d: Date) {
 type ActivityView = "today" | "some" | "all";
 
 export default function ProgressPage() {
-  const { challenge, user, addReps, triggerCelebration } = useOutletContext<{
-    challenge: Challenge;
-    user: User;
-    users: User[];
-    addReps: (amount: number) => void;
-    triggerCelebration: (message: string, timeout: number) => void;
-  }>();
+  const { challenge, user, users, addReps, triggerCelebration } =
+    useOutletContext<{
+      challenge: Challenge;
+      user: User;
+      users: User[];
+      addReps: (amount: number) => void;
+      triggerCelebration: (message: string, timeout: number) => void;
+    }>();
 
   const [view, setView] = useState<ActivityView>("today");
 
@@ -35,6 +36,7 @@ export default function ProgressPage() {
 
   if (!challenge || !user) return <p>Loading data...</p>;
 
+  // Group logs by day
   const grouped: Record<string, Activity[]> = {};
   for (const log of logs) {
     const created = log.createdAt as Date;
@@ -44,12 +46,23 @@ export default function ProgressPage() {
   }
 
   const sortedDays = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+  const visibleDays = view === "today" ? sortedDays.slice(0, 1) : sortedDays;
 
-  const visibleDays =
-    view === "today" ? sortedDays.slice(0, 1) : sortedDays;
+  // Build trophy map for today's top 3 (based on user.counter)
+  let trophyMap: Record<string, string> = {};
+  const todayKey = dateKey(new Date());
+  const rankedUsers = [...users].sort(
+    (a, b) => (b.counter ?? 0) - (a.counter ?? 0)
+  );
+  rankedUsers.forEach((u, idx) => {
+    if (idx === 0) trophyMap[u.id] = "🥇";
+    else if (idx === 1) trophyMap[u.id] = "🥈";
+    else if (idx === 2) trophyMap[u.id] = "🥉";
+  });
 
   return (
     <>
+      {/* Counter on top */}
       <Counter
         challenge={challenge}
         user={user}
@@ -57,27 +70,62 @@ export default function ProgressPage() {
         triggerCelebration={triggerCelebration}
       />
 
-      <div className="flex-1 overflow-y-auto p-1 mt-15">
-        <h2 className="text-xl text-left font-semibold mb-4">Activity Log</h2>
+      <div className="flex-1 overflow-y-auto p-1 mt-10">
+        {/* Divider style like leaderboard */}
+        <div className="divider opacity-70 mb-4">Activity Log</div>
 
-        {visibleDays.map((dayKey, dayIdx) => {
+        {/* Tabs for view switching */}
+        <div className="tabs tabs-boxed mb-4">
+          <a
+            className={`tab ${view === "today" ? "tab-active" : ""}`}
+            onClick={() => setView("today")}
+          >
+            Today
+          </a>
+          <a
+            className={`tab ${view === "some" ? "tab-active" : ""}`}
+            onClick={() => setView("some")}
+          >
+            Recent
+          </a>
+          <a
+            className={`tab ${view === "all" ? "tab-active" : ""}`}
+            onClick={() => setView("all")}
+          >
+            All
+          </a>
+        </div>
+
+        {/* Logs grouped by day */}
+        {visibleDays.map((dayKey) => {
           const dayLogs = grouped[dayKey];
           const dateObj = new Date(dayKey);
+          const isToday = dayKey === todayKey;
+
+          // Track which users already got a trophy/streak badge
+          const shownTrophy: Record<string, boolean> = {};
+          const shownStreak: Record<string, boolean> = {};
 
           return (
-            <div key={dayKey} className="mb-0">
-              <div className="py-2 text-gray-700">{dateLabel(dateObj)}</div>
+            <div key={dayKey} className="mb-6">
+              {/* Date header */}
+              <div className="flex items-center gap-2 mb-2 font-medium text-gray-700">
+                {dateLabel(dateObj)}
+                {isToday && (
+                  <span className="badge badge-primary badge-sm">Today</span>
+                )}
+              </div>
+
+              {/* Same wrapper style as leaderboard table */}
               <div className="overflow-y-auto rounded-lg border border-base-content/10 bg-base-100">
                 <table className="table table-zebra w-full">
-                  {dayIdx === 0 && (
-                    <thead>
-                      <tr className="text-sm text-gray-500 uppercase">
-                        <th className="px-4 py-2">When</th>
-                        <th className="px-4 py-2">Who</th>
-                        <th className="px-4 py-2 text-right">Progress</th>
-                      </tr>
-                    </thead>
-                  )}
+                  <thead>
+                    <tr className="text-sm text-gray-500 uppercase">
+                      <th className="px-4 py-2">When</th>
+                      <th className="px-4 py-2">Who</th>
+                      <th className="px-4 py-2 text-right">Reps</th>
+                    </tr>
+                  </thead>
                   <tbody>
                     {dayLogs.map((log) => {
                       const created = log.createdAt as Date;
@@ -87,21 +135,63 @@ export default function ProgressPage() {
                         minute: "2-digit",
                       });
 
+                      // Trophy: only once per user today
+                      let trophy: string | null = null;
+                      if (
+                        isToday &&
+                        trophyMap[log.userId] &&
+                        !shownTrophy[log.userId]
+                      ) {
+                        trophy = trophyMap[log.userId];
+                        shownTrophy[log.userId] = true;
+                      }
+
+                      // Streak badge: only once per user today, show only the higher one
+                      let streakBadge: JSX.Element | null = null;
+                      if (isToday && !shownStreak[log.userId]) {
+                        const u = users.find((uu) => uu.id === log.userId);
+                        if (u) {
+                          if (u.fullStreak && u.fullStreak >= 0) {
+                            streakBadge = (
+                              <span className="flex items-center gap-0.5 badge bg-green-100 text-green-700 border-none px-1 py-0">
+                                <span className="text-xs">🔥</span>
+                                <span className="text-[0.65rem] text-gray-600">
+                                  {u.fullStreak}
+                                </span>
+                              </span>
+                            );
+                            shownStreak[log.userId] = true;
+                          } else if (u.partialStreak && u.partialStreak >= 0) {
+                            streakBadge = (
+                              <span className="flex items-center gap-0.5 badge bg-yellow-100 text-yellow-700 border-none px-1 py-0">
+                                <span className="text-xs">🌗</span>
+                                <span className="text-[0.65rem] text-gray-600">
+                                  {u.partialStreak}
+                                </span>
+                              </span>
+                            );
+                            shownStreak[log.userId] = true;
+                          }
+                        }
+                      }
+
                       return (
                         <tr
                           key={log.id}
-                          className={`hover ${isYou ? "bg-yellow-100" : ""}`}
+                          className={`hover ${isYou ? "bg-primary/10" : ""}`}
                         >
                           <td className="px-4 py-2 text-gray-600">{time}</td>
                           <td
-                            className={`px-4 py-2 ${
+                            className={`px-4 py-2 flex items-center gap-2 ${
                               isYou ? "font-bold text-primary" : ""
                             }`}
                           >
                             {isYou ? "You" : log.userName}
+                            {trophy && <span>{trophy}</span>}
+                            {streakBadge}
                           </td>
                           <td className="px-4 py-2 text-right font-semibold text-accent">
-                            +{log.amount}
+                            🏋️ +{log.amount}
                           </td>
                         </tr>
                       );
@@ -113,23 +203,7 @@ export default function ProgressPage() {
           );
         })}
 
-        <button
-          type="button"
-          className="btn btn-xs btn-ghost"
-          onClick={() =>
-            setView((prev) =>
-              prev === "today" ? "some" : prev === "some" ? "all" : "today"
-            )
-          }
-        >
-          {view === "today"
-            ? "Show more"
-            : view === "some"
-            ? "Show all"
-            : "Show today"}
-        </button>
-
-        <div className="mb-30"></div>
+        <div className="mb-20"></div>
       </div>
     </>
   );
