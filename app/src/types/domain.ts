@@ -10,6 +10,13 @@ export interface Challenge {
     lastResetAt: Date;
     resetTimeStr: string   // HH:mm
     cutOffDays: number; // days of inactivity before marked inactive
+
+    // stats
+    partialStreak?: number;
+    fullStreak?: number;   
+    totalCounter?: number;    
+    bestPartialStreak?: number;
+    bestFullStreak?: number;   
 }
 
 export interface User {
@@ -24,7 +31,6 @@ export interface User {
     partialStreak?: number;
     fullStreak?: number;   
     totalCounter?: number;    
-
     bestPartialStreak?: number;
     bestFullStreak?: number;   
     
