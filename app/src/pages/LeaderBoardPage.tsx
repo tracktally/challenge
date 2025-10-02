@@ -9,15 +9,16 @@ export default function LeaderBoardPage() {
     users: User[];
     user: User;
   }>();
+
   const [showAllUsers, setShowAllUsers] = useState(false);
-  const [activeTab, setActiveTab] = useState<
-    "progress" | "streaks" | "reps"
-  >("progress");
-
-
+  const [activeTab, setActiveTab] = useState<"progress" | "streaks" | "reps">(
+    "progress"
+  );
 
   const inactivityCutOff = new Date();
-  inactivityCutOff.setDate(inactivityCutOff.getDate() - (challenge?.cutOffDays ?? 3));
+  inactivityCutOff.setDate(
+    inactivityCutOff.getDate() - (challenge?.cutOffDays ?? 3)
+  );
 
   const filteredUsers = useMemo(() => {
     let arr = [...users].map((u) => ({
@@ -33,22 +34,13 @@ export default function LeaderBoardPage() {
         (u.lastActivityAt != null && u.lastActivityAt > inactivityCutOff)
     );
 
-    for(let u of arr) {
-        console.log("last:", u.lastActivityAt, "\ncut:", inactivityCutOff, challenge?.cutOffDays);
-    }
-
-    // Sorting depends on tab
     if (activeTab === "progress") {
       arr.sort((a, b) => {
         const aTime = a.goalReachedAt?.getTime() ?? null;
-        const bTime = b.goalReachedAt?.getTime() ?? null;    
+        const bTime = b.goalReachedAt?.getTime() ?? null;
         if (aTime && bTime) return aTime - bTime;
         if (aTime && !bTime) return -1;
         if (!aTime && bTime) return 1;
-        
-        if (a.counter !== b.counter) {
-          return b.counter - a.counter;
-        }
 
         if (a.counter !== b.counter) {
           return b.counter - a.counter;
@@ -57,7 +49,6 @@ export default function LeaderBoardPage() {
         const aAct = a.lastActivityAt?.getTime() ?? 0;
         const bAct = b.lastActivityAt?.getTime() ?? 0;
         return bAct - aAct;
-        
       });
     } else if (activeTab === "streaks") {
       arr.sort((a, b) => {
@@ -66,62 +57,84 @@ export default function LeaderBoardPage() {
         return (b.partialStreak ?? 0) - (a.partialStreak ?? 0);
       });
     } else if (activeTab === "reps") {
-      arr.sort((a, b) => ((b.totalCounter ?? 0) + b.counter) 
-        - ((a.totalCounter ?? 0) + a.counter ));
+      arr.sort(
+        (a, b) =>
+          (b.totalCounter ?? 0) + b.counter - ((a.totalCounter ?? 0) + a.counter)
+      );
     }
 
     return arr;
   }, [users, showAllUsers, inactivityCutOff, activeTab]);
 
-    if (!challenge || !user || !users) return <p>Loading data...</p>;
+  if (!challenge || !user || !users) return <p>Loading data...</p>;
 
   return (
-    <div className="flex-1 overflow-y-auto p-1 mt-1">
-      <h2 className="text-xl text-left font-semibold mb-4">Your Stats</h2>
+    <div className="flex-1 overflow-y-auto p-1 mt-0">
+      {/* ----------------------------- */}
+      {/* Your Stats */}
+      {/* ----------------------------- */}
+      <h2 className="text-xl text-left font-semibold mb-2">Leaderboard</h2>
+      <div className="divider -mt-1 opacity-70">You</div>
 
-      {/* ----------------------------- */}
-      {/* Summary stats with unified colors + tooltips */}
-      {/* ----------------------------- */}
-      <div className="grid grid-cols-3 gap-2 mb-6">
-        <div
-          className="stat shadow place-items-center p-2 tooltip tooltip-right"
-          data-tip="Days you reached half of goal"
-        >
-          <div className="stat-title flex items-center gap-1 text-sm">
-            <span>🌗</span> <span>Partial</span>
+      <div className="grid grid-cols-3 gap-3 mb-2">
+        <div className="flex flex-col items-center justify-center p-2 bg-base-200 rounded-lg shadow-sm">
+          <div className="text-xl font-bold text-primary">
+            {user.partialStreak ?? 0}
           </div>
-          <div className="stat-value">
-            <span className="badge badge-primary text-lg px-3">
-              {user.partialStreak ?? 0}
-            </span>
+          <div className="text-xs text-gray-500 flex items-center gap-1">
+            🌗 Partial
           </div>
         </div>
 
-        <div
-          className="stat shadow place-items-center p-2 tooltip"
-          data-tip="Days you hit your full goal"
-        >
-          <div className="stat-title flex items-center gap-1 text-sm">
-            <span>💯</span> <span>Streak</span>
+        <div className="flex flex-col items-center justify-center p-2 bg-base-200 rounded-lg shadow-sm">
+          <div className="text-xl font-bold text-success">
+            {user.fullStreak ?? 0}
           </div>
-          <div className="stat-value">
-            <span className="badge badge-success text-lg px-3">
-              {user.fullStreak ?? 0}
-            </span>
+          <div className="text-xs text-gray-500 flex items-center gap-1">
+            🔥 Streak
           </div>
         </div>
 
-        <div
-          className="stat shadow place-items-center p-2 tooltip tooltip-left"
-          data-tip="Total reps completed"
-        >
-          <div className="stat-title flex items-center gap-1 text-sm">
-            <span>🏋️</span> <span>Reps</span>
+        <div className="flex flex-col items-center justify-center p-2 bg-base-200 rounded-lg shadow-sm">
+          <div className="text-xl font-bold text-accent">
+            {(user.totalCounter ?? 0) + user.counter}
           </div>
-          <div className="stat-value">
-            <span className="badge badge-accent text-lg px-3">
-              {(user.totalCounter ?? 0) + user.counter}
-            </span>
+          <div className="text-xs text-gray-500 flex items-center gap-1">
+            🏋️ Reps
+          </div>
+        </div>
+      </div>
+
+      {/* ----------------------------- */}
+      {/* Group Stats */}
+      {/* ----------------------------- */}
+      <div className="divider my-4 opacity-70">Team</div>
+
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="flex flex-col items-center justify-center p-2 bg-base-200 rounded-lg shadow-sm">
+          <div className="text-xl font-bold text-primary">
+            {challenge.partialStreak ?? 0}
+          </div>
+          <div className="text-xs text-gray-500 flex items-center gap-1">
+            🌗 Partial
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center justify-center p-2 bg-base-200 rounded-lg shadow-sm">
+          <div className="text-xl font-bold text-success">
+            {challenge.fullStreak ?? 0}
+          </div>
+          <div className="text-xs text-gray-500 flex items-center gap-1">
+            🔥 Full
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center justify-center p-2 bg-base-200 rounded-lg shadow-sm">
+          <div className="text-xl font-bold text-accent">
+            {(challenge.totalCounter ?? 0) + challenge.counter}
+          </div>
+          <div className="text-xs text-gray-500 flex items-center gap-1">
+            🏋️ Reps
           </div>
         </div>
       </div>
@@ -129,32 +142,27 @@ export default function LeaderBoardPage() {
       {/* ----------------------------- */}
       {/* Leaderboard Tabs */}
       {/* ----------------------------- */}
-      <h2 className="text-xl text-left font-semibold mb-4">Leaderboard</h2>
-      <div className="tabs tabs-box mb-4">
-        <input
-          type="radio"
-          name="leaderboard-tabs"
-          className="tab"
-          aria-label="Progress"
-          checked={activeTab === "progress"}
-          onChange={() => setActiveTab("progress")}
-        />
-        <input
-          type="radio"
-          name="leaderboard-tabs"
-          className="tab"
-          aria-label="Streaks"
-          checked={activeTab === "streaks"}
-          onChange={() => setActiveTab("streaks")}
-        />
-        <input
-          type="radio"
-          name="leaderboard-tabs"
-          className="tab"
-          aria-label="Reps"
-          checked={activeTab === "reps"}
-          onChange={() => setActiveTab("reps")}
-        />
+      <div className="divider my-4 opacity-70">Leaderboard</div>
+
+      <div className="tabs tabs-boxed mb-4">
+        <a
+          className={`tab ${activeTab === "progress" ? "tab-active" : ""}`}
+          onClick={() => setActiveTab("progress")}
+        >
+          Progress
+        </a>
+        <a
+          className={`tab ${activeTab === "streaks" ? "tab-active" : ""}`}
+          onClick={() => setActiveTab("streaks")}
+        >
+          Streaks
+        </a>
+        <a
+          className={`tab ${activeTab === "reps" ? "tab-active" : ""}`}
+          onClick={() => setActiveTab("reps")}
+        >
+          Reps
+        </a>
       </div>
 
       {/* ----------------------------- */}
@@ -162,31 +170,16 @@ export default function LeaderBoardPage() {
       {/* ----------------------------- */}
       <div className="overflow-y-auto rounded-lg border border-base-content/10 bg-base-100">
         <table className="table table-zebra w-full">
-          <thead>
-            <tr className="text-sm text-gray-500 uppercase">
-              <th className="text-center">#</th>
-              <th>Name</th>
-              {activeTab === "progress" && (
-                <th className="text-right">Progress</th>
-              )}
-              {activeTab === "streaks" && (
-                <th className="text-right">Streaks</th>
-              )}
-              {activeTab === "reps" && (
-                <th className="text-right">All Time Reps</th>
-              )}
-            </tr>
-          </thead>
           <tbody>
             {filteredUsers.map((u, idx) => {
               const isYou = u.id === user.id;
               return (
                 <tr
                   key={u.id}
-                  className={`hover ${isYou ? "bg-primary/10" : ""} text-xl`}
+                  className={`hover ${isYou ? "bg-primary/10" : ""} text-lg`}
                 >
-                  {/* Rank */}
-                  <th className="text-center align-middle">
+                  {/* Medal / Rank */}
+                  <th className="text-center align-middle text-lg">
                     <div className="flex justify-center items-center">
                       {idx === 0
                         ? "🥇"
@@ -199,35 +192,31 @@ export default function LeaderBoardPage() {
                   </th>
 
                   {/* Name */}
-                  <td>
-                    <div>
-                      <div
-                        className={`${isYou ? "font-bold text-primary" : ""}`}
-                      >
-                        {isYou ? "You" : u.name}
-                      </div>
-                      {activeTab === "progress" && u.goalReachedAt && (
-                        <div className="text-xs text-gray-500 -mt-1">
-                          {(() => {
-                            const d = u.goalReachedAt;
-                            return (
-                              "✅ " +
-                              d.toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                second: "2-digit",
-                                hour12: false,
-                              })
-                            );
-                          })()}
-                        </div>
-                      )}
+                  <td className="px-2 py-1">
+                    <div className={`${isYou ? "font-bold text-primary" : ""}`}>
+                      {isYou ? "You" : u.name}
                     </div>
+                    {activeTab === "progress" && u.goalReachedAt && (
+                      <div className="text-xs text-gray-500 -mt-0.5">
+                        {(() => {
+                          const d = u.goalReachedAt as Date;
+                          return (
+                            "✅ " +
+                            d.toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                              hour12: false,
+                            })
+                          );
+                        })()}
+                      </div>
+                    )}
                   </td>
 
-                  {/* Tab-specific cell */}
+                  {/* Progress Tab */}
                   {activeTab === "progress" && (
-                    <td className="text-right align-right">
+                    <td className="text-right align-right px-2 py-1">
                       <div className="flex flex-col items-end space-y-1">
                         <div className="text-xs">
                           <span className="font-bold">{u.counter}</span>
@@ -247,21 +236,23 @@ export default function LeaderBoardPage() {
                     </td>
                   )}
 
+                  {/* Streaks Tab */}
                   {activeTab === "streaks" && (
-                    <td className="text-right">
+                    <td className="text-right px-2 py-1">
                       <div className="flex gap-2 justify-end">
                         <span className="badge badge-primary text-sm">
                           🌗 {u.partialStreak ?? 0}
                         </span>
                         <span className="badge badge-success text-sm">
-                          💯 {u.fullStreak ?? 0}
+                          🔥 {u.fullStreak ?? 0}
                         </span>
                       </div>
                     </td>
                   )}
 
+                  {/* Reps Tab */}
                   {activeTab === "reps" && (
-                    <td className="text-right">
+                    <td className="text-right px-2 py-1">
                       <span className="badge badge-accent text-sm px-3">
                         {(u.totalCounter ?? 0) + u.counter}
                       </span>
