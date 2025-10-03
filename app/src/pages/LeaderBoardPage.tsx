@@ -100,7 +100,7 @@ export default function LeaderBoardPage() {
             {(user.totalCounter ?? 0) + user.counter}
           </div>
           <div className="text-xs text-gray-500 flex items-center gap-1">
-            🏋️ Reps
+            🏋️ Total Reps
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function LeaderBoardPage() {
             {challenge.fullStreak ?? 0}
           </div>
           <div className="text-xs text-gray-500 flex items-center gap-1">
-            🔥 Full
+            🔥 Streak
           </div>
         </div>
 
@@ -134,7 +134,7 @@ export default function LeaderBoardPage() {
             {(challenge.totalCounter ?? 0) + challenge.counter}
           </div>
           <div className="text-xs text-gray-500 flex items-center gap-1">
-            🏋️ Reps
+            🏋️ Total Reps
           </div>
         </div>
       </div>
