@@ -40,7 +40,7 @@ function App() {
                     
                         <Route path="*" element={<NotFound />} />
                     </Route>
-                     <Route path="/doc/*" element={<Navigate to="https://tracktally.github.io/doc/" replace />} />
+                     
                     <Route path="*" element={<NotFound />} />
                 </Routes>
                 
