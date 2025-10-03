@@ -25,6 +25,7 @@ function App() {
 
     return (
         <>
+            {/* /doc is reserved for some documentation. dont swallow it */}
             {!window.location.pathname.startsWith("/doc") && (
             <Router basename="/">
                 <Routes>
