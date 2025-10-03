@@ -25,7 +25,8 @@ function App() {
 
     return (
         <>
-            <Router>
+            {!window.location.pathname.startsWith("/doc") && (
+            <Router basename="/">
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/challenge/new" element={<CreateChallengePage />} />
@@ -41,10 +42,10 @@ function App() {
                         <Route path="*" element={<NotFound />} />
                     </Route>
                      
-                    <Route path="*" element={<NotFound />} />
+                    {/* <Route path="*" element={<NotFound />} /> */}
                 </Routes>
-                
             </Router>
+            )}
         </>
     );
 }
