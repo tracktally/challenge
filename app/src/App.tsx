@@ -23,10 +23,14 @@ function App() {
       );
     }
 
+    if (window.location.pathname.startsWith("/doc")) {
+     // Forward the browser to the static /doc site (skip React entirely)
+    window.location.replace(window.location.pathname + window.location.search + window.location.hash);
+    }
+
     return (
         <>
             {/* /doc is reserved for some documentation. dont swallow it */}
-            {!window.location.pathname.startsWith("/doc") && (
             <Router basename="/">
                 <Routes>
                     <Route path="/" element={<HomePage />} />
@@ -46,7 +50,6 @@ function App() {
                     {/* <Route path="*" element={<NotFound />} /> */}
                 </Routes>
             </Router>
-            )}
         </>
     );
 }

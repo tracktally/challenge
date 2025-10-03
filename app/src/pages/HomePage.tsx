@@ -32,7 +32,7 @@ export default function HomePage() {
                 </div>
                 <div className="ml-auto">
                     <span>
-                    <h1 className="underline decoration-2  underline-offset-4"><a href="https://tracktally.github.io">Docs</a></h1>
+                    <h1 className="underline decoration-2  underline-offset-4"><a href="https://tracktally.github.io/doc">Docs</a></h1>
                     </span>
                     
                 </div>
