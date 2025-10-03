@@ -1,5 +1,5 @@
 // src/App.tsx
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ChallengeLayout from "./pages/ChallengeLayout";
 import ProgressPage from "./pages/ProgressPage";
@@ -40,6 +40,7 @@ function App() {
                     
                         <Route path="*" element={<NotFound />} />
                     </Route>
+                     <Route path="/doc/*" element={<Navigate to="https://tracktally.github.io/doc/" replace />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>
                 

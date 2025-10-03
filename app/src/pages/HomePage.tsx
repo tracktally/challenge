@@ -30,6 +30,12 @@ export default function HomePage() {
                 <div className="flextext-center">
                     <h1 className="text-lg font-bold truncate">Track Tally.</h1>
                 </div>
+                <div className="ml-auto">
+                    <span>
+                    <h1 className="underline decoration-2  underline-offset-4"><a href="https://tracktally.github.io/doc/">Docs</a></h1>
+                    </span>
+                    
+                </div>
             </div>
 
             <div className="p-6 text-center">
