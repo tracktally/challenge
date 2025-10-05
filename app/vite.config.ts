@@ -14,6 +14,12 @@ export default defineConfig({
         tailwindcss(),
         VitePWA({
             registerType: "autoUpdate", // keeps SW fresh
+                  workbox: {
+                    navigateFallback: '/index.html',
+                    navigateFallbackDenylist: [
+                    /^\/doc(\/|$)/,
+                    ],
+                },
             includeAssets: ["favicon.svg", "robots.txt", "icons/*"],
             manifest: {
                 name: "Track Tally",

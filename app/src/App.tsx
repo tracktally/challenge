@@ -1,5 +1,5 @@
 // src/App.tsx
-import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ChallengeLayout from "./pages/ChallengeLayout";
 import ProgressPage from "./pages/ProgressPage";
@@ -23,15 +23,10 @@ function App() {
       );
     }
 
-    if (window.location.pathname.startsWith("/doc")) {
-     // Forward the browser to the static /doc site (skip React entirely)
-    window.location.replace(window.location.pathname + window.location.search + window.location.hash);
-    }
-
     return (
         <>
             {/* /doc is reserved for some documentation. dont swallow it */}
-            <Router basename="/">
+            <HashRouter basename="/">
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/challenge/new" element={<CreateChallengePage />} />
@@ -47,9 +42,9 @@ function App() {
                         <Route path="*" element={<NotFound />} />
                     </Route>
                      
-                    {/* <Route path="*" element={<NotFound />} /> */}
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
-            </Router>
+            </HashRouter>
         </>
     );
 }
