@@ -9,6 +9,7 @@ import type { FirebaseError } from "firebase/app";
 export function useChallenge(challengeId: string) {
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [error, setError] = useState<FirebaseError | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const ref = doc(db, "challenges", challengeId);
@@ -21,16 +22,19 @@ export function useChallenge(challengeId: string) {
           createdAt: normalizeDate(snap.data().createdAt),
           lastResetAt: normalizeDate(snap.data().lastResetAt),
           });
+          setLoading(false);
       } else {
         setChallenge(null);
+        setLoading(false);
       }
     },
   (err) => {
     console.error("Error fetching challenge:", err);
     setError(err as FirebaseError);
     setChallenge(null); 
+    setLoading(false);
   });
   }, [challengeId]);
 
-  return {challenge, error};
+  return {challenge, error, loading};
 }

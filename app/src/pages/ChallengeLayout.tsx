@@ -19,7 +19,7 @@ export default function ChallengeLayout() {
         setTimeout(() => setCelebrationMessage(null), timeout * 1000);
     };
 
-    const {challenge, error} = useChallenge(uuid ?? "");
+    const {challenge, error, loading} = useChallenge(uuid ?? "");
     const localChallenge = getChallenge(challenge?.id ?? "");
 
     const user = useUser(challenge?.id ?? "", localChallenge?.userId ?? "");
@@ -36,7 +36,14 @@ export default function ChallengeLayout() {
             <a href="/" className="link">Back to home</a>
         </div>
     );
-    if (!challenge) return <p>Loading...</p>;
+    if (loading && !challenge) return <p>Loading...</p>;
+    if (!loading && !challenge) return (
+        <div className="p-4">
+            <p className="">Challenge not found</p>
+            <br />
+            <a href="/" className="link">Back to home</a>
+        </div>
+    )
 
     console.log("challenge layout with id, ", uuid);
     const challengeName = challenge?.name
