@@ -3,6 +3,7 @@ import { useLocalChallenges } from "../hooks/useLocalChallenges";
 import type { LocalChallenge } from "../hooks/useLocalChallenges";
 import { useState } from "react";
 import { Button } from "@headlessui/react";
+import { siteSuffix } from "../firebase/config";
 
 export default function HomePage() {
     const { localChallenges, removeLocalChallenge } = useLocalChallenges();
@@ -28,7 +29,7 @@ export default function HomePage() {
         <main className="flex flex-col min-h-screen bg-base-200">
             <div className="navbar bg-base-200 shadow px-4 ">
                 <div className="flextext-center">
-                    <h1 className="text-lg font-bold truncate">Track Tally.</h1>
+                    <h1 className="text-lg font-bold truncate">Track Tally. <i>{siteSuffix}</i></h1>
                 </div>
                 <div className="ml-auto">
                     <span>

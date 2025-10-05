@@ -25,9 +25,13 @@ jobs:
           cache-dependency-path: app/package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build project
+        env:
+          # use prod firebase
+          VITE_APP_ENV: "prod"
+          
         run: npm run build
 
       - name: Setup SSH with Deploy Key

@@ -19,7 +19,7 @@ export default function ChallengeLayout() {
         setTimeout(() => setCelebrationMessage(null), timeout * 1000);
     };
 
-    const challenge = useChallenge(uuid ?? "");
+    const {challenge, error} = useChallenge(uuid ?? "");
     const localChallenge = getChallenge(challenge?.id ?? "");
 
     const user = useUser(challenge?.id ?? "", localChallenge?.userId ?? "");
@@ -29,6 +29,13 @@ export default function ChallengeLayout() {
     /* Keep this here to use buffered activity even on different menu entries */
     const {addReps} = useBufferedActivity(challenge, user, 10);
     
+    if (error) return (
+        <div className="p-4">
+            <p className="text-red-600">Error loading challenge: {error.message}</p>
+            <br />
+            <a href="/" className="link">Back to home</a>
+        </div>
+    );
     if (!challenge) return <p>Loading...</p>;
 
     console.log("challenge layout with id, ", uuid);
