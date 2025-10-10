@@ -11,7 +11,7 @@
       <script>
     (function () {
       try {
-        var stored = localStorage.getItem("theme");            // "light" | "dark" | ... | "system" | null
+        var stored = localStorage.getItem("theme");
         var systemDark = window.matchMedia &&
           window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -21,7 +21,6 @@
 
         document.documentElement.setAttribute("data-theme", theme);
       } catch (e) {
-        // fallback if localStorage blocked
         document.documentElement.setAttribute("data-theme", "light");
       }
     })();
