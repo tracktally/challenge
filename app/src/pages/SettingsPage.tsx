@@ -32,6 +32,7 @@ export default function SettingsPage() {
     });
   };
 
+  // copy snippet with fallback to work across browsers
   async function copyToClipboard(text: string, label: string) {
     try {
       if (navigator.clipboard?.writeText) {

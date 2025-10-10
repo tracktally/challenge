@@ -32,6 +32,7 @@ export default function ChallengeLayout() {
     if (error) return (
         <div className="p-4">
             <p className="text-red-600">Error loading challenge: {error.message}</p>
+            <p> Refresh the site to try again. </p>
             <br />
             <a href="/" className="link">Back to home</a>
         </div>

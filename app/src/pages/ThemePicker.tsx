@@ -16,7 +16,7 @@ export default function ThemePicker() {
     []
   );
   const [theme, setTheme] = useState<string>(
-    localStorage.getItem("theme") || "system"
+    localStorage.getItem("theme") || "light"
   );
 
   const effectiveTheme: Theme = (theme === "system"

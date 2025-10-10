@@ -6,7 +6,6 @@ import { useLocalChallenges } from "../hooks/useLocalChallenges.ts";
 import type { LocalChallenge } from "../hooks/useLocalChallenges.ts";
 
 
-
 export function CreateUserPage() {
     const { challenge } = useOutletContext<{ challenge: Challenge }>();
     console.log(challenge);

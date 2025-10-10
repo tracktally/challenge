@@ -48,7 +48,7 @@ export default function ProgressPage() {
   const sortedDays = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
   const visibleDays = view === "today" ? sortedDays.slice(0, 1) : sortedDays;
 
-  // Build trophy map for today's top 3 (based on user.counter)
+
   let trophyMap: Record<string, string> = {};
   const todayKey = dateKey(new Date());
   const rankedUsers = [...users].sort(
@@ -60,9 +60,9 @@ export default function ProgressPage() {
     else if (idx === 2) trophyMap[u.id] = "🥉";
   });
 
+  // TODO: Refacor the different views into their own components
   return (
     <>
-      {/* Counter on top */}
       <Counter
         challenge={challenge}
         user={user}
@@ -71,7 +71,6 @@ export default function ProgressPage() {
       />
 
       <div className="flex-1 overflow-y-auto p-1 mt-10">
-        {/* Divider style like leaderboard */}
         <div className="divider opacity-70 mb-4">Activity Log</div>
 
         {/* Tabs for view switching */}
@@ -96,19 +95,17 @@ export default function ProgressPage() {
           </a>
         </div>
 
-        {/* Logs grouped by day */}
         {visibleDays.map((dayKey) => {
           const dayLogs = grouped[dayKey];
           const dateObj = new Date(dayKey);
           const isToday = dayKey === todayKey;
 
-          // Track which users already got a trophy/streak badge
+
           const shownTrophy: Record<string, boolean> = {};
           const shownStreak: Record<string, boolean> = {};
 
           return (
             <div key={dayKey} className="mb-6">
-              {/* Date header */}
               <div className="flex items-center gap-2 mb-2 font-medium text-gray-700">
                 {dateLabel(dateObj)}
                 {isToday && (
@@ -116,7 +113,7 @@ export default function ProgressPage() {
                 )}
               </div>
 
-              {/* Same wrapper style as leaderboard table */}
+
               <div className="overflow-y-auto rounded-lg border border-base-content/10 bg-base-100">
                 <table className="table table-zebra w-full">
                   <thead>
@@ -146,7 +143,7 @@ export default function ProgressPage() {
                         shownTrophy[log.userId] = true;
                       }
 
-                      // Streak badge: only once per user today, show only the higher one
+                      // XXX: Streak badge: only once per user today, show only the higher one
                       let streakBadge: JSX.Element | null = null;
                       if (isToday && !shownStreak[log.userId]) {
                         const u = users.find((uu) => uu.id === log.userId);

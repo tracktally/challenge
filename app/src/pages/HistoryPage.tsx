@@ -36,6 +36,7 @@ export default function HistoryPage() {
   const historyLimit = 60;
 
   useEffect(() => {
+    // TODO: Refactor this into its own use hook and firebase function
     if (!challenge?.id || !user?.id) return;
     const ref = collection(db, "challenges", challenge.id, "dailyStats");
     const q = query(ref, orderBy("date", "desc"), limit(historyLimit));
@@ -107,8 +108,7 @@ export default function HistoryPage() {
     "#0088FE",
     "#FF00FF",
   ];
-
-  // 🔥 Compute user totals from history
+  
   const totalsFromHistory: Record<string, number> = {};
   dailyTotals.forEach((day) => {
     Object.entries(day.users ?? {}).forEach(([uid, val]) => {
