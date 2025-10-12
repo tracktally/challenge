@@ -24,7 +24,7 @@ npm run dev -- --host
 Use node >= v18.
 
 #### Maintance Worker
-A (separate) maintance worker script periodically resets the counters and updates the history and stats
+A [(separate) maintance worker script](https://github.com/tracktally/firebase-worker) periodically resets the counters and updates the history and stats
 for all challenges using firestore admin SDK. This way no cloud functions must be hosted (cloud functions are not part of free spark plan).
 
 ### Deploy
