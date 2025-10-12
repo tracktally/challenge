@@ -26,7 +26,7 @@ export default function ProgressPage() {
       user: User;
       users: User[];
       addReps: (amount: number) => void;
-      triggerCelebration: (message: string, timeout: number) => void;
+      triggerCelebration: (message: string, timeout: number, icon?: string) => void;
     }>();
 
   const [view, setView] = useState<ActivityView>("today");

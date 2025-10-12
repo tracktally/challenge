@@ -14,8 +14,10 @@ export default function ChallengeLayout() {
     const {getChallenge} = useLocalChallenges();
 
     const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
-    const triggerCelebration = (message: string, timeout: number) => {
+    const [celebrationIcon, setCelebrationIcon] = useState<string | null>(null);
+    const triggerCelebration = (message: string, timeout: number, icon?: string) => {
         setCelebrationMessage(message);
+        setCelebrationIcon(icon ?? "🎉");
         setTimeout(() => setCelebrationMessage(null), timeout * 1000);
     };
 
@@ -192,12 +194,13 @@ export default function ChallengeLayout() {
             </div>
             {/* Celebration */}
             {celebrationMessage && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 z-50 pointer-events-none">
-                <span className="text-9xl animate-bounce">🎉</span>
-                <h2 className="mt-6 text-4xl font-extrabold text-white animate-pulse">
-                    {celebrationMessage}
-                </h2>
-                </div>
+            <div className="fixed inset-0 flex flex-col items-center justify-center bg-black/70 z-50 pointer-events-none overscroll-contain">
+                <span className="text-9xl animate-bounce">{celebrationIcon}</span>
+                <h2
+                className="mt-6 text-4xl font-extrabold text-white animate-pulse text-center px-4"
+                dangerouslySetInnerHTML={{ __html: celebrationMessage }}
+                />
+            </div>
             )}
         </main>
     );

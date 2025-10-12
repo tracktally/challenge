@@ -8,7 +8,7 @@ interface CounterProps {
     challenge: Challenge;
     user: User;
     addReps: (amount: number) => void;
-    triggerCelebration: (message: string, sec: number) => void;
+    triggerCelebration: (message: string, sec: number, icon?: string) => void;
 }
 
 interface ResetInfo {
@@ -91,18 +91,18 @@ export default function Counter({
         setCount(newCount);
 
         if (newCount >= challenge.goalCounterUser && !user.goalReachedAt) {
-            triggerCelebration("Awesome! You made it", 3);
+            triggerCelebration("Awesome!<br /> You earned your <u>Full Streak</u>", 3, "🔥");
             if (navigator.vibrate) {
-                navigator.vibrate(2000);
+                navigator.vibrate([1000, 200, 1000, 200, 1000, 200, 1000]);
             }
             // markGoalReached(challenge.id, user.id);
             updateUser(challenge.id, user.id, { goalReachedAt: new Date() });
         }
 
         if (newCount >= challenge.goalCounterUser / 2 && !user.goalPartialReachedAt) {
-            triggerCelebration("Keep it up. Half way", 3);
+            triggerCelebration("Keep it up! <br />You earned your <u>Partial Streak</u>.", 3, "🌗");
             if (navigator.vibrate) {
-                navigator.vibrate(1000);
+                navigator.vibrate([500, 200, 500, 200, 500, 200, 500]);
             }
             // markGoalReached(challenge.id, user.id);
             updateUser(challenge.id, user.id, { goalPartialReachedAt: new Date() });
