@@ -1,5 +1,6 @@
 # Tack Tally
-> A simple shared counter for daily challenges. Log reps, earn streaks, improve together.  
+> A simple shared counter for daily challenges. Log reps, earn streaks, improve together. 
+>  
 > https://tracktally.github.io/doc/
 > 
 
@@ -10,8 +11,8 @@ Track Tally is a simple shared counter app for daily challenges. Set a target (e
 ### Develop
 This is a serverless web app. The database is hosted on [firebase](https://firebase.google.com/docs/firestore) (spark free plan). To host this app yourself, create a new firestore database and configure `app/src/firebase/config.ts`.
 
-#### Firestore
-See `./firestore` for rules.
+#### Firebase
+See `./firebase` for rules.
 
 #### Web
 
