@@ -1,4 +1,4 @@
-# Tack Tally
+# Track Tally
 > A simple shared counter for daily challenges. Log reps, earn streaks, improve together. 
 >  
 > https://tracktally.github.io/doc/
