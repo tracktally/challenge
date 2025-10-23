@@ -29,7 +29,7 @@ export default function ChallengeLayout() {
     const users = useUsers(challenge?.id ?? "");
 
     /* Keep this here to use buffered activity even on different menu entries */
-    const {addReps} = useBufferedActivity(challenge, user, 10);
+    const {addReps} = useBufferedActivity(challenge, user, 1);
     
     if (error) return (
         <div className="p-4">
