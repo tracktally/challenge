@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @plugin "daisyui" {
   themes: all;
 }
@@ -8,5 +9,16 @@
 }
 
 .dock-active {
-    @apply font-bold;
+  @apply font-bold;
+}
+
+
+@keyframes bg-pulse {
+
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+tr.animate-bg-pulse {
+  animation: bg-pulse 5s ease-in-out infinite;
 }

@@ -173,10 +173,17 @@ export default function LeaderBoardPage() {
           <tbody>
             {filteredUsers.map((u, idx) => {
               const isYou = u.id === user.id;
+              // flash recently active users
+              const now = Date.now();
+              const lastActivity = u.lastActivityAt?.getTime?.() ?? 0;
+              const flashPeriod = 5 * 60 * 1000; // 2 mins
+              const isRecentlyActive = (now - lastActivity < flashPeriod);
               return (
                 <tr
                   key={u.id}
-                  className={`hover ${isYou ? "bg-primary/10" : ""} text-lg`}
+                  className={`hover text-lg
+                    ${isYou ? "bg-primary/10" : ""}
+                    ${isRecentlyActive && !isYou ? "animate-bg-pulse !bg-primary/10" : ""} `}
                 >
                   {/* Medal / Rank */}
                   <th className="text-center align-middle text-lg">
