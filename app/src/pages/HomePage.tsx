@@ -88,7 +88,10 @@ export default function HomePage() {
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        removeLocalChallenge(c.challengeId);
+                                                        const ok = window.confirm(`Delete challenge "${c.name}"? This will remove it from your device.`);
+                                                        if (ok) {
+                                                            removeLocalChallenge(c.challengeId);
+                                                        }
                                                     }}
                                                     className="btn btn-sm btn-outline"
                                                 >
