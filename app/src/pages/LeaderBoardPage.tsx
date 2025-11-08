@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router-dom";
 import type { Challenge, User } from "../types/domain.ts";
-import { normalizeDate } from "../firebase/util.ts";
+import { normalizeDate, sortUserByProgress } from "../firebase/util.ts";
 import { useState, useMemo } from "react";
 
 export default function LeaderBoardPage() {
@@ -35,21 +35,7 @@ export default function LeaderBoardPage() {
     );
 
     if (activeTab === "progress") {
-      arr.sort((a, b) => {
-        const aTime = a.goalReachedAt?.getTime() ?? null;
-        const bTime = b.goalReachedAt?.getTime() ?? null;
-        if (aTime && bTime) return aTime - bTime;
-        if (aTime && !bTime) return -1;
-        if (!aTime && bTime) return 1;
-
-        if (a.counter !== b.counter) {
-          return b.counter - a.counter;
-        }
-
-        const aAct = a.lastActivityAt?.getTime() ?? 0;
-        const bAct = b.lastActivityAt?.getTime() ?? 0;
-        return bAct - aAct;
-      });
+      arr.sort((a, b) => sortUserByProgress(a, b));
     } else if (activeTab === "streaks") {
       arr.sort((a, b) => {
         const fullDiff = (b.fullStreak ?? 0) - (a.fullStreak ?? 0);
@@ -247,12 +233,19 @@ export default function LeaderBoardPage() {
                   {activeTab === "streaks" && (
                     <td className="text-right px-2 py-1">
                       <div className="flex gap-2 justify-end">
-                        <span className="badge badge-primary text-sm">
-                          🌗 {u.partialStreak ?? 0}
-                        </span>
-                        <span className="badge badge-success text-sm">
-                          🔥 {u.fullStreak ?? 0}
-                        </span>
+                        <span className="flex items-center gap-0.5 badge bg-green-100 text-green-700 border-none px-1 py-0">
+                                <span className="text-xs">🔥</span>
+                                <span className="text-[0.65rem] text-gray-600">
+                                  {u.fullStreak ?? 0}
+                                </span>
+                              </span>
+
+                          <span className="flex items-center gap-0.5 badge bg-yellow-100 text-yellow-700 border-none px-1 py-0">
+                                <span className="text-xs">🌗</span>
+                                <span className="text-[0.65rem] text-gray-600">
+                                  {u.partialStreak ?? 0}
+                                </span>
+                          </span>
                       </div>
                     </td>
                   )}
@@ -285,3 +278,4 @@ export default function LeaderBoardPage() {
     </div>
   );
 }
+
