@@ -22,7 +22,34 @@ export function normalizeDate(value: any): Date | null {
   return isNaN(d.getTime()) ? null : d;
 }
 
+// Default sort for users
+export function sortUserByProgress(a: {
+  goalReachedAt?: Date,
+  counter?: number;
+  lastActivityAt?: Date
+}, b: {
+    goalReachedAt?: Date,
+    counter?: number;
+    lastActivityAt?: Date
+  }): number {
+  const aTime = normalizeDate(a.goalReachedAt)?.getTime() ?? null;
+  const bTime = normalizeDate(b.goalReachedAt)?.getTime() ?? null;
 
+  // goal reached
+  if (aTime && bTime) return aTime - bTime;
+  if (aTime && !bTime) return -1;
+  if (!aTime && bTime) return 1;
+
+  // counter
+  if (a.counter !== b.counter) {
+    return b.counter - a.counter;
+  }
+
+  // last activity: older first
+  const aAct = normalizeDate(a.lastActivityAt)?.getTime() ?? 0;
+  const bAct = normalizeDate(b.lastActivityAt)?.getTime() ?? 0;
+  return aAct - bAct;
+}
 
 export function getResetDates(challenge: {
     interval_hrs?: number;

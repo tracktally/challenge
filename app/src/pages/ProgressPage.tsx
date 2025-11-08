@@ -3,6 +3,7 @@ import { useActivities } from "../hooks/useActivities.ts";
 import type { User, Challenge, Activity } from "../types/domain";
 import Counter from "./Counter.tsx";
 import { useState } from "react";
+import { sortUserByProgress } from "../firebase/util.ts";
 
 function dateKey(d: Date) {
   return d.toISOString().slice(0, 10); // YYYY-MM-DD
@@ -52,7 +53,7 @@ export default function ProgressPage() {
   let trophyMap: Record<string, string> = {};
   const todayKey = dateKey(new Date());
   const rankedUsers = [...users].sort(
-    (a, b) => (b.counter ?? 0) - (a.counter ?? 0)
+    (a, b) => sortUserByProgress(a, b)
   );
   rankedUsers.forEach((u, idx) => {
     if (idx === 0) trophyMap[u.id] = "🥇";
