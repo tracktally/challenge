@@ -15,6 +15,7 @@ import {
   GoogleAuthProvider, linkWithRedirect ,
   setPersistence,
   getRedirectResult,
+  linkWithPopup,
   indexedDBLocalPersistence,
   onAuthStateChanged,
   signInAnonymously,
@@ -73,20 +74,20 @@ export const db = initializeFirestore(app, {
     }),
 });
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) await signInAnonymously(auth);
-});
-
 export async function linkGoogleAccount() {
   const provider = new GoogleAuthProvider();
-  await linkWithRedirect(auth.currentUser, provider);
+  // link seems to be blocked by github.io
+  // await linkWithRedirect(auth.currentUser, provider); 
+  await linkWithPopup(auth.currentUser, provider);
 }
 
 let hasInitialized = false;
 
 export async function handleGoogleRedirect() {
+  console.log("handleGoogleRedirect called");
   try {
     const result = await getRedirectResult(auth);
+    console.log("Redirect result:", result);
     if (result) {
       console.log("Account successfully linked:", result.user.uid);
     }
@@ -95,6 +96,7 @@ export async function handleGoogleRedirect() {
   }
   
   hasInitialized = true;
+  console.log(auth.currentUser)
 
   if (!auth.currentUser) {
     console.log("No user after redirect. signing in anonymously");
