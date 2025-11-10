@@ -18,6 +18,11 @@ service cloud.firestore {
       allow create: if signedIn(request);
       allow update: if signedIn(request)
       allow delete: if false;
+
+      match /auth/{uid} {
+        allow get, create: if signedIn(request);
+        allow delete, list, update: if false;
+      }
        
       match /users/{uid} {
         allow get, list, create, update:  if signedIn(request);

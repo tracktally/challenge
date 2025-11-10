@@ -186,6 +186,7 @@ export default function SettingsPage() {
             const isGoogleLinked = user?.providerData?.some(
               (p) => p.providerId === "google.com"
             );
+            console.log("auth user:", user);
 
             return (
               <div className="space-y-3">

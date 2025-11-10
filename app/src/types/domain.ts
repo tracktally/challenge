@@ -33,10 +33,14 @@ export interface User {
     totalCounter?: number;    
     bestPartialStreak?: number;
     bestFullStreak?: number;   
-    
+}
 
-
-
+// challenge/{id}/auth/{id}
+export interface UserAuth {
+    id: string;
+    userId: string;
+    provider: string;
+    userName: string;
 }
 
 export interface Activity {

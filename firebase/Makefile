@@ -1,7 +1,7 @@
 #!/bin/make
 
 logout:
-	firebase login
+	firebase logout
 
 login:
 	firebase login
