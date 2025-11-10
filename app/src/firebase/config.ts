@@ -76,48 +76,17 @@ export const db = initializeFirestore(app, {
     }),
 });
 
-// export async function linkGoogleAccount() {
-//   const provider = new GoogleAuthProvider();
-
-//   try {
-//     const result = await linkWithPopup(auth.currentUser!, provider);
-//     console.log("Linked Google:", result.user.uid);
-//     return result.user;
-
-//   } catch (err: any) {
-//     if (err.code === "auth/credential-already-in-use") {
-//       console.log("Google account already linked. Signing in instead.");
-
-//       const signInResult = await signInWithPopup(auth, provider);
-//       return signInResult.user;
-//     }
-
-//     console.error("Popup link error:", err);
-//     throw err;
-//   }
-// }
-
 export async function linkGoogleAccount() {
   const provider = new GoogleAuthProvider();
 
   if (auth.currentUser?.isAnonymous) {
-    // link anonymous → google
+    // link anonymous to google
     return linkWithRedirect(auth.currentUser, provider);
   } else {
     // sign in normally
     return signInWithRedirect(auth, provider);
   }
 }
-
-// export async function linkGoogleAccount() {
-//   const provider = new GoogleAuthProvider();
-//   try {
-//     const result = await linkWithPopup(auth.currentUser!, provider);
-//     console.log("Google linked:", result.user.uid);
-//   } catch (err) {
-//     console.error("Popup link error:", err);
-//   }
-// }
 
 
 let initialized = false;
@@ -137,3 +106,16 @@ onAuthStateChanged(auth, async (user) => {
     await signInAnonymously(auth);
   }
 });
+
+export async function getGoogleEmail(): Promise<string | null> {
+  const user = auth.currentUser;
+  if (!user) return null;
+
+  const token = await user.getIdTokenResult();
+  return (
+    token.claims.email ||
+    user.email ||
+    user.providerData?.find(p => p.providerId === "google.com")?.email ||
+    null
+  );
+}
