@@ -198,7 +198,7 @@ export default function SettingsPage() {
                 {isGoogleLinked && (
                   <p className="text-sm">
                     <span className="font-bold">Email:</span>{" "}
-                    {user?.providerData?.[0]?.email ?? "No email available"}
+                    {user?.providerData?.[0]?.email ?? user?.email ?? "No email available"}
                   </p>
                 )}
 
