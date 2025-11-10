@@ -1,15 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { User, Challenge } from "../types/domain.ts";
 import { useOutletContext } from "react-router-dom";
 import { updateChallenge } from "../firebase/challenge.ts";
 import ThemePicker from "./ThemePicker.tsx";
 
-import { auth, linkGoogleAccount } from "../firebase/config.ts"; 
+import { auth, linkGoogleAccount } from "../firebase/config.ts";
 
 export default function SettingsPage() {
   const { challenge, user, challengeUrl } = useOutletContext<{
     challenge: Challenge; user: User; challengeUrl: string;
   }>();
+
+  const [authUser, setAuthUser] = useState(auth.currentUser);
+
+  useEffect(() => {
+    const unsub = auth.onAuthStateChanged((newUser) => {
+      setAuthUser(newUser);
+    });
+    return () => unsub();
+  }, []);
 
   const [name, setName] = useState(challenge?.name ?? "");
   const [challengeGoal, setChallengeGoal]
@@ -34,7 +43,6 @@ export default function SettingsPage() {
     });
   };
 
-  // copy snippet with fallback to work across browsers
   async function copyToClipboard(text: string, label: string) {
     try {
       if (navigator.clipboard?.writeText) {
@@ -82,63 +90,54 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* Challenge Settings Card */}
+      {/* Challenge Settings */}
       <form onSubmit={handleSaveChallenge} className="card bg-base-100 card-border">
         <div className="card-body p-4 space-y-3">
           <h2 className="card-title">Challenge Settings</h2>
 
-          {/* Challenge Name */}
           <label className="form-control w-full">
             <div className="label"><span className="label-text">Name</span></div>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Challenge Name"
               className="input input-bordered w-full"
             />
           </label>
 
-          {/* Challenge Goal */}
           <label className="form-control w-full">
             <div className="label"><span className="label-text">Challenge Goal</span></div>
             <input
               type="number"
               value={challengeGoal ?? ""}
               onChange={(e) => setChallengeGoal(Number(e.target.value))}
-              placeholder="e.g. 100"
               className="input input-bordered w-full"
               min={1}
             />
           </label>
 
-          {/* User Goal */}
           <label className="form-control w-full">
             <div className="label"><span className="label-text">User Goal</span></div>
             <input
               type="number"
               value={userGoal ?? ""}
               onChange={(e) => setUserGoal(Number(e.target.value))}
-              placeholder="e.g. 10"
               className="input input-bordered w-full"
               min={1}
             />
           </label>
 
-          {/* Cut Off */}
           <label className="form-control w-full">
             <div className="label"><span className="label-text">Cut Off Days</span></div>
             <input
               type="number"
               value={cutOffDays}
               onChange={(e) => setCutOffDays(Number(e.target.value))}
-              placeholder="e.g. 3"
               className="input input-bordered w-full"
               min={0}
             />
           </label>
 
-          {/* Reset Time of Day */}
           <label className="form-control w-full">
             <div className="label"><span className="label-text">Reset Time</span></div>
             <input
@@ -149,7 +148,6 @@ export default function SettingsPage() {
             />
           </label>
 
-          {/* Invite Link */}
           <label className="form-control w-full">
             <div className="label"><span className="label-text">Invite Link</span></div>
             <input
@@ -159,12 +157,8 @@ export default function SettingsPage() {
               className="input input-bordered w-full cursor-pointer select-all"
               {...makeCopyHandlers(shareUrl, "Invite link")}
             />
-            <div className="label">
-              <span className="label-text-alt">Click or focus to copy</span>
-            </div>
           </label>
 
-          {/* Challenge ID */}
           <label className="form-control w-full">
             <div className="label"><span className="label-text">Challenge ID</span></div>
             <input
@@ -174,89 +168,70 @@ export default function SettingsPage() {
               className="input input-bordered w-full cursor-pointer select-all"
               {...makeCopyHandlers(challenge.id, "Challenge ID")}
             />
-            <div className="label">
-              <span className="label-text-alt">Click or focus to copy</span>
-            </div>
           </label>
 
-          {/* Save Button */}
           <div className="flex justify-end">
             <button type="submit" className="btn btn-primary">Update</button>
           </div>
         </div>
       </form>
 
-        {/* User Settings */}
-        <div className="card bg-base-100 card-border">
-          <div className="card-body p-4 space-y-3">
-            <h2 className="card-title">User</h2>
-
-            {(() => {
-              const user = auth.currentUser;
-              const isGoogleLinked = user?.providerData?.some(
-                (p) => p.providerId === "google.com"
-              );
-
-              return (
-                <div className="space-y-3">
-                  {/* Status text */}
-                  <p className="text-sm opacity-70">
-                    {!isGoogleLinked
-                      ? "Link your account with Google to save your progress across devices."
-                      : "Your account is linked with Google."}
-                  </p>
-
-                  {/* Email */}
-                  {isGoogleLinked && (
-                    <p className="text-sm">
-                      <span className="font-bold">Email:</span>{" "}
-                      {user?.providerData?.[0]?.email ?? "No email available"}
-                    </p>
-                  )}
-
-                  {/* Link Button */}
-                  {!isGoogleLinked && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => linkGoogleAccount()}
-                    >
-                      Link Google Account
-                    </button>
-                  )}
-
-                  {/* Success Message */}
-                  {isGoogleLinked && (
-                    <div className="alert alert-success shadow-sm mt-2">
-                      <span>Account linked with Google</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-          </div>
-        </div>
-
-        <div className="card bg-base-100 card-border">
+      {/* User Settings */}
+      <div className="card bg-base-100 card-border">
         <div className="card-body p-4 space-y-3">
-          <h2 className="card-title">Theme</h2>
+          <h2 className="card-title">User</h2>
 
-          <div className="space-y-1">
-            <p className="text-sm opacity-70">
-              Personalize the theme of the App.
-            </p>
+          {(() => {
+            const user = authUser;
+            const isGoogleLinked = user?.providerData?.some(
+              (p) => p.providerId === "google.com"
+            );
 
-            </div>
-            <ThemePicker />
-          </div>
+            return (
+              <div className="space-y-3">
+                <p className="text-sm opacity-70">
+                  {!isGoogleLinked
+                    ? "Link your account with Google to save your progress across devices."
+                    : "Your account is linked with Google."}
+                </p>
+
+                {isGoogleLinked && (
+                  <p className="text-sm">
+                    <span className="font-bold">Email:</span>{" "}
+                    {user?.providerData?.[0]?.email ?? "No email available"}
+                  </p>
+                )}
+
+                {!isGoogleLinked && (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => linkGoogleAccount()}
+                  >
+                    Link Google Account
+                  </button>
+                )}
+
+                {isGoogleLinked && (
+                  <div className="alert alert-success shadow-sm mt-2">
+                    <span>Account linked with Google</span>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </div>
       </div>
 
-{/* 
+      {/* Theme */}
       <div className="card bg-base-100 card-border">
-        <h2 className="card-title p-4">Theme</h2>
-        <div className="px-4 pb-4">
-          
+        <div className="card-body p-4 space-y-3">
+          <h2 className="card-title">Theme</h2>
+          <p className="text-sm opacity-70">
+            Personalize the theme of the App.
+          </p>
+          <ThemePicker />
         </div>
-      </div> */}
+      </div>
 
       <div className="mb-30"></div>
     </div>
