@@ -9,9 +9,12 @@ import {
     persistentMultipleTabManager, setDoc,
 } from "firebase/firestore"
 
+
 import {
   getAuth,
+  GoogleAuthProvider, linkWithRedirect ,
   setPersistence,
+  getRedirectResult,
   indexedDBLocalPersistence,
   onAuthStateChanged,
   signInAnonymously,
@@ -73,3 +76,19 @@ export const db = initializeFirestore(app, {
 onAuthStateChanged(auth, async (user) => {
   if (!user) await signInAnonymously(auth);
 });
+
+export async function linkGoogleAccount() {
+  const provider = new GoogleAuthProvider();
+  await linkWithRedirect(auth.currentUser, provider);
+}
+
+export async function handleGoogleRedirect() {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      console.log("Account successfully linked:", result.user.uid);
+    }
+  } catch (err) {
+    console.error("Redirect error:", err);
+  }
+}
