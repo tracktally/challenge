@@ -26,6 +26,7 @@ export default function SettingsPage() {
     async function loadEmail() {
       const email = await getGoogleEmail();
       if (email) setGoogleEmail(email!);
+      else setGoogleEmail("");
     }
     loadEmail();
   }, []);
@@ -207,10 +208,10 @@ export default function SettingsPage() {
                     : "Your account is linked with Google."}
                 </p>
 
-                {isGoogleLinked && (
+                {isGoogleLinked && googleEmail != "" (
                   <p className="text-sm">
                     <span className="font-bold">Email:</span>{" "}
-                    {googleEmail ?? "No email available"}
+                    {googleEmail == "" ? "No email available": googleEmail}
                   </p>
                 )}
 
