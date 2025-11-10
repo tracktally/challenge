@@ -223,14 +223,27 @@ export default function SettingsPage() {
         </div>
       </div>
 
+        <div className="card bg-base-100 card-border">
+        <div className="card-body p-4 space-y-3">
+          <h2 className="card-title">Theme</h2>
 
-      {/* Theme Picker */}
+          <div className="space-y-1">
+            <p className="text-sm opacity-70">
+              Change theme of App.
+            </p>
+
+            </div>
+            <ThemePicker />
+          </div>
+      </div>
+
+{/* 
       <div className="card bg-base-100 card-border">
         <h2 className="card-title p-4">Theme</h2>
         <div className="px-4 pb-4">
-          <ThemePicker />
+          
         </div>
-      </div>
+      </div> */}
 
       <div className="mb-30"></div>
     </div>
