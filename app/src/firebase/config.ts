@@ -26,7 +26,7 @@ const ENV = (import.meta.env.VITE_APP_ENV ?? "dev") as "dev" | "prod";
 // beanrm
 const devConfig = {
   apiKey: "AIzaSyB-M1n9lAU6vUO9xltMGUCGwObAizuc1No",
-  authDomain: "tracktally-dev.firebaseapp.com",
+  authDomain: "tracktally-dev.github.io", // tracktally-dev.firebaseapp.com
   projectId: "tracktally-dev",
   storageBucket: "tracktally-dev.firebasestorage.app",
   messagingSenderId: "185163725463",
@@ -45,7 +45,7 @@ const challengeDevConfig = {
 
 const prodConfig = {
   apiKey: "AIzaSyBUnmdskhEgf0cZlWG7VYwrtyA2mhkA7SM",
-  authDomain: "tracktally-prod.firebaseapp.com",
+  authDomain: "tracktally.github.io", // tracktally-prod.firebaseapp.com",
   projectId: "tracktally-prod",
   storageBucket: "tracktally-prod.firebasestorage.app",
   messagingSenderId: "766523427751",
