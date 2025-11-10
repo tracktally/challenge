@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 
 import { registerSW } from "virtual:pwa-register";
+import { handleGoogleRedirect } from './firebase/config.ts';
+
+await handleGoogleRedirect();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

@@ -4,6 +4,8 @@ import { useOutletContext } from "react-router-dom";
 import { updateChallenge } from "../firebase/challenge.ts";
 import ThemePicker from "./ThemePicker.tsx";
 
+import { auth, linkGoogleAccount } from "../firebase/config.ts"; // ADD
+
 export default function SettingsPage() {
   const { challenge, user, challengeUrl } = useOutletContext<{
     challenge: Challenge; user: User; challengeUrl: string;
@@ -38,7 +40,6 @@ export default function SettingsPage() {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(text);
       } else {
-        // Fallback
         const ta = document.createElement("textarea");
         ta.value = text;
         ta.style.position = "fixed";
@@ -72,7 +73,7 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
 
-      {/* Toast (DaisyUI) */}
+      {/* Toast */}
       {copiedMsg && (
         <div className="toast toast-top toast-end z-50">
           <div className="alert alert-success">
@@ -124,7 +125,7 @@ export default function SettingsPage() {
             />
           </label>
 
-           {/* Cut Off */}
+          {/* Cut Off */}
           <label className="form-control w-full">
             <div className="label"><span className="label-text">Cut Off Days</span></div>
             <input
@@ -148,7 +149,7 @@ export default function SettingsPage() {
             />
           </label>
 
-          {/* Invite Link (read-only, copy on click/focus) */}
+          {/* Invite Link */}
           <label className="form-control w-full">
             <div className="label"><span className="label-text">Invite Link</span></div>
             <input
@@ -163,7 +164,7 @@ export default function SettingsPage() {
             </div>
           </label>
 
-          {/* Challenge ID (read-only, copy on click/focus) */}
+          {/* Challenge ID */}
           <label className="form-control w-full">
             <div className="label"><span className="label-text">Challenge ID</span></div>
             <input
@@ -185,6 +186,45 @@ export default function SettingsPage() {
         </div>
       </form>
 
+      {/* User Settings */}
+      <div className="card bg-base-100 card-border">
+        <div className="card-body p-4 space-y-3">
+          <h2 className="card-title">User</h2>
+
+          <div className="space-y-1">
+            <p className="text-sm opacity-70">
+              {auth.currentUser?.isAnonymous
+                ? "Link your account with Google to save your progress across devices."
+                : "Your account is linked with Google."}
+            </p>
+
+            {!auth.currentUser?.isAnonymous && (
+              <p className="text-sm">
+                <span className="font-bold">Email:</span>{" "}
+                {auth.currentUser?.providerData?.[0]?.email ?? "No email available"}
+              </p>
+            )}
+          </div>
+
+          {auth.currentUser?.isAnonymous && (
+            <button
+              className="btn btn-primary"
+              onClick={() => linkGoogleAccount()}
+            >
+              Link Google Account
+            </button>
+          )}
+
+          {!auth.currentUser?.isAnonymous && (
+            <div className="alert alert-success shadow-sm mt-2">
+              <span>Account linked with Google</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+
+      {/* Theme Picker */}
       <div className="card bg-base-100 card-border">
         <h2 className="card-title p-4">Theme</h2>
         <div className="px-4 pb-4">
