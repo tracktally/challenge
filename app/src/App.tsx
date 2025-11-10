@@ -10,7 +10,6 @@ import {CreateChallengePage} from "./pages/CreateChallengePage.tsx";
 
 import './App.css'
 import {CreateUserPage} from "./pages/CreateUserPage.tsx";
-import { handleGoogleRedirect } from "./firebase/config.ts";
 
 function App() {
     function NotFound() {
