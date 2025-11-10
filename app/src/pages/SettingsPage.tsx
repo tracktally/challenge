@@ -4,7 +4,7 @@ import { useOutletContext } from "react-router-dom";
 import { updateChallenge } from "../firebase/challenge.ts";
 import ThemePicker from "./ThemePicker.tsx";
 
-import { auth, linkGoogleAccount } from "../firebase/config.ts";
+import { auth, getGoogleEmail, linkGoogleAccount } from "../firebase/config.ts";
 
 export default function SettingsPage() {
   const { challenge, user, challengeUrl } = useOutletContext<{
@@ -18,6 +18,16 @@ export default function SettingsPage() {
       setAuthUser(newUser);
     });
     return () => unsub();
+  }, []);
+
+  const [googleEmail, setGoogleEmail] = useState("");
+
+  useEffect(() => {
+    async function loadEmail() {
+      const email = await getGoogleEmail();
+      if (email) setGoogleEmail(email!);
+    }
+    loadEmail();
   }, []);
 
   const [name, setName] = useState(challenge?.name ?? "");
@@ -183,6 +193,7 @@ export default function SettingsPage() {
 
           {(() => {
             const user = authUser;
+            
             const isGoogleLinked = user?.providerData?.some(
               (p) => p.providerId === "google.com"
             );
@@ -199,7 +210,7 @@ export default function SettingsPage() {
                 {isGoogleLinked && (
                   <p className="text-sm">
                     <span className="font-bold">Email:</span>{" "}
-                    {user?.providerData?.[0]?.email ?? user?.email ?? "No email available"}
+                    {googleEmail ?? "No email available"}
                   </p>
                 )}
 
