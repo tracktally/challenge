@@ -1,12 +1,10 @@
+import "./firebase/config.ts";
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 
 import { registerSW } from "virtual:pwa-register";
-import { handleGoogleRedirect } from './firebase/config.ts';
 
-console.log("handleGoogleRedirect...");
-await handleGoogleRedirect();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

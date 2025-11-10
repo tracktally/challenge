@@ -76,39 +76,29 @@ export const db = initializeFirestore(app, {
 
 export async function linkGoogleAccount() {
   const provider = new GoogleAuthProvider();
-  // link seems to be blocked by github.io
-  // await linkWithRedirect(auth.currentUser, provider); 
-  await linkWithPopup(auth.currentUser, provider);
-}
-
-let hasInitialized = false;
-
-export async function handleGoogleRedirect() {
-  console.log("handleGoogleRedirect called");
   try {
-    const result = await getRedirectResult(auth);
-    console.log("Redirect result:", result);
-    if (result) {
-      console.log("Account successfully linked:", result.user.uid);
-    }
+    const result = await linkWithPopup(auth.currentUser!, provider);
+    console.log("Google linked:", result.user.uid);
   } catch (err) {
-    console.error("Redirect error:", err);
-  }
-  
-  hasInitialized = true;
-  console.log(auth.currentUser)
-
-  if (!auth.currentUser) {
-    console.log("No user after redirect. signing in anonymously");
-    await signInAnonymously(auth);
+    console.error("Popup link error:", err);
   }
 }
+
+
+let initialized = false;
 
 onAuthStateChanged(auth, async (user) => {
-  if (!hasInitialized) return;
+  if (!initialized) {
+    initialized = true;
+    if (!user) {
+      console.log("No user on initial load → logging in anonymously");
+      await signInAnonymously(auth);
+    }
+    return;
+  }
 
   if (!user) {
-    console.log("Auth state: no user anonymous login");
+    console.log("User signed out → anonymous login");
     await signInAnonymously(auth);
   }
 });

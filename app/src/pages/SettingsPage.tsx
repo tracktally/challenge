@@ -4,7 +4,7 @@ import { useOutletContext } from "react-router-dom";
 import { updateChallenge } from "../firebase/challenge.ts";
 import ThemePicker from "./ThemePicker.tsx";
 
-import { auth, linkGoogleAccount } from "../firebase/config.ts"; // ADD
+import { auth, linkGoogleAccount } from "../firebase/config.ts"; 
 
 export default function SettingsPage() {
   const { challenge, user, challengeUrl } = useOutletContext<{
@@ -186,42 +186,55 @@ export default function SettingsPage() {
         </div>
       </form>
 
-      {/* User Settings */}
-      <div className="card bg-base-100 card-border">
-        <div className="card-body p-4 space-y-3">
-          <h2 className="card-title">User</h2>
+        {/* User Settings */}
+        <div className="card bg-base-100 card-border">
+          <div className="card-body p-4 space-y-3">
+            <h2 className="card-title">User</h2>
 
-          <div className="space-y-1">
-            <p className="text-sm opacity-70">
-              {auth.currentUser?.isAnonymous
-                ? "Link your account with Google to save your progress across devices."
-                : "Your account is linked with Google."}
-            </p>
+            {(() => {
+              const user = auth.currentUser;
+              const isGoogleLinked = user?.providerData?.some(
+                (p) => p.providerId === "google.com"
+              );
 
-            {!auth.currentUser?.isAnonymous && (
-              <p className="text-sm">
-                <span className="font-bold">Email:</span>{" "}
-                {auth.currentUser?.providerData?.[0]?.email ?? "No email available"}
-              </p>
-            )}
+              return (
+                <div className="space-y-3">
+                  {/* Status text */}
+                  <p className="text-sm opacity-70">
+                    {!isGoogleLinked
+                      ? "Link your account with Google to save your progress across devices."
+                      : "Your account is linked with Google."}
+                  </p>
+
+                  {/* Email */}
+                  {isGoogleLinked && (
+                    <p className="text-sm">
+                      <span className="font-bold">Email:</span>{" "}
+                      {user?.providerData?.[0]?.email ?? "No email available"}
+                    </p>
+                  )}
+
+                  {/* Link Button */}
+                  {!isGoogleLinked && (
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => linkGoogleAccount()}
+                    >
+                      Link Google Account
+                    </button>
+                  )}
+
+                  {/* Success Message */}
+                  {isGoogleLinked && (
+                    <div className="alert alert-success shadow-sm mt-2">
+                      <span>Account linked with Google</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
-
-          {auth.currentUser?.isAnonymous && (
-            <button
-              className="btn btn-primary"
-              onClick={() => linkGoogleAccount()}
-            >
-              Link Google Account
-            </button>
-          )}
-
-          {!auth.currentUser?.isAnonymous && (
-            <div className="alert alert-success shadow-sm mt-2">
-              <span>Account linked with Google</span>
-            </div>
-          )}
         </div>
-      </div>
 
         <div className="card bg-base-100 card-border">
         <div className="card-body p-4 space-y-3">
@@ -229,7 +242,7 @@ export default function SettingsPage() {
 
           <div className="space-y-1">
             <p className="text-sm opacity-70">
-              Change theme of App.
+              Personalize the theme of the App.
             </p>
 
             </div>
