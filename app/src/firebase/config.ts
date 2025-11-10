@@ -82,6 +82,8 @@ export async function linkGoogleAccount() {
   await linkWithRedirect(auth.currentUser, provider);
 }
 
+let hasInitialized = false;
+
 export async function handleGoogleRedirect() {
   try {
     const result = await getRedirectResult(auth);
@@ -91,4 +93,20 @@ export async function handleGoogleRedirect() {
   } catch (err) {
     console.error("Redirect error:", err);
   }
+  
+  hasInitialized = true;
+
+  if (!auth.currentUser) {
+    console.log("No user after redirect. signing in anonymously");
+    await signInAnonymously(auth);
+  }
 }
+
+onAuthStateChanged(auth, async (user) => {
+  if (!hasInitialized) return;
+
+  if (!user) {
+    console.log("Auth state: no user anonymous login");
+    await signInAnonymously(auth);
+  }
+});
