@@ -208,7 +208,7 @@ export default function SettingsPage() {
                     : "Your account is linked with Google."}
                 </p>
 
-                {isGoogleLinked && googleEmail != "" (
+                {isGoogleLinked && googleEmail != "" && (
                   <p className="text-sm">
                     <span className="font-bold">Email:</span>{" "}
                     {googleEmail == "" ? "No email available": googleEmail}
