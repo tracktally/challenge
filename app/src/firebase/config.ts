@@ -21,6 +21,8 @@ import {
   indexedDBLocalPersistence,
   onAuthStateChanged,
   signInAnonymously,
+  OAuthProvider,
+  type User,
 } from "firebase/auth";
 
 const ENV = (import.meta.env.VITE_APP_ENV ?? "dev") as "dev" | "prod";
@@ -67,6 +69,7 @@ if (ENV === "prod") {
   siteSuffix = "testing";
 }
 
+
 const app = initializeApp(config);
 export const auth = getAuth(app);
 
@@ -84,6 +87,16 @@ export async function linkGoogleAccount() {
     return linkWithRedirect(auth.currentUser, provider);
   } else {
     // sign in normally
+    return signInWithRedirect(auth, provider);
+  }
+}
+
+export async function linkAppleAccount() {
+  const provider = new OAuthProvider("apple.com");
+
+  if (auth.currentUser?.isAnonymous) {
+    return linkWithRedirect(auth.currentUser, provider);
+  } else {
     return signInWithRedirect(auth, provider);
   }
 }
@@ -107,7 +120,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-export async function getGoogleEmail(): Promise<string | null> {
+export async function getAuthEmail(): Promise<string | null> {
   const user = auth.currentUser;
   if (!user) return null;
 
@@ -119,3 +132,14 @@ export async function getGoogleEmail(): Promise<string | null> {
     null
   );
 }
+
+export function isGoogleLinked(user: User){
+  return user?.providerData?.some(
+              (p) => p.providerId === "google.com");
+}
+
+// does not work without apple developer account
+export function isAppleLinked(user: User) {
+  return user?.providerData?.some(
+              (p) => p.providerId === "apple.com");
+}              
