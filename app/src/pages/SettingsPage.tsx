@@ -3,41 +3,53 @@ import type { User, Challenge } from "../types/domain.ts";
 import { useOutletContext } from "react-router-dom";
 import { updateChallenge } from "../firebase/challenge.ts";
 import ThemePicker from "./ThemePicker.tsx";
-
-import { auth, getGoogleEmail, linkGoogleAccount } from "../firebase/config.ts";
+import {
+  auth,
+  getAuthEmail,
+  isAppleLinked,
+  isGoogleLinked,
+  linkGoogleAccount,
+  linkAppleAccount,
+} from "../firebase/config.ts";
+import { FcGoogle } from "react-icons/fc";
+import { FaApple } from "react-icons/fa";
 
 export default function SettingsPage() {
   const { challenge, user, challengeUrl } = useOutletContext<{
-    challenge: Challenge; user: User; challengeUrl: string;
+    challenge: Challenge;
+    user: User;
+    challengeUrl: string;
   }>();
 
   const [authUser, setAuthUser] = useState(auth.currentUser);
+  const [authEmail, setAuthEmail] = useState("");
+  const [name, setName] = useState(challenge?.name ?? "");
+  const [challengeGoal, setChallengeGoal] = useState<number | undefined>(
+    challenge.goalCounterChallenge
+  );
+  const [userGoal, setUserGoal] = useState<number | undefined>(
+    challenge.goalCounterUser
+  );
+  const [resetTime, setResetTime] = useState<string>(
+    challenge?.resetTimeStr ?? ""
+  );
+  const [cutOffDays, setCutOffDays] = useState<number | undefined>(
+    challenge.cutOffDays ?? 3
+  );
+  const [copiedMsg, setCopiedMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged((newUser) => {
-      setAuthUser(newUser);
-    });
+    const unsub = auth.onAuthStateChanged((newUser) => setAuthUser(newUser));
     return () => unsub();
   }, []);
 
-  const [googleEmail, setGoogleEmail] = useState("");
-
   useEffect(() => {
     async function loadEmail() {
-      const email = await getGoogleEmail();
-      if (email) setGoogleEmail(email!);
-      else setGoogleEmail("");
+      const email = await getAuthEmail();
+      setAuthEmail(email ?? "");
     }
     loadEmail();
   }, []);
-
-  const [name, setName] = useState(challenge?.name ?? "");
-  const [challengeGoal, setChallengeGoal]
-    = useState<number | undefined>(challenge.goalCounterChallenge);
-  const [userGoal, setUserGoal] = useState<number | undefined>(challenge.goalCounterUser);
-  const [resetTime, setResetTime] = useState<string>(challenge?.resetTimeStr ?? "");
-  const [copiedMsg, setCopiedMsg] = useState<string | null>(null);
-  const [cutOffDays, setCutOffDays] = useState<number | undefined>(challenge.cutOffDays ?? 3);
 
   if (!user || !challenge) return <div>Loading...</div>;
 
@@ -46,11 +58,11 @@ export default function SettingsPage() {
   const handleSaveChallenge = (e: React.FormEvent) => {
     e.preventDefault();
     updateChallenge(challenge.id, {
-      name: name,
+      name,
       goalCounterChallenge: challengeGoal,
       goalCounterUser: userGoal,
       resetTimeStr: resetTime,
-      cutOffDays: cutOffDays,
+      cutOffDays,
     });
   };
 
@@ -91,7 +103,6 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-
       {/* Toast */}
       {copiedMsg && (
         <div className="toast toast-top toast-end z-50">
@@ -194,37 +205,38 @@ export default function SettingsPage() {
 
           {(() => {
             const user = authUser;
-            
-            const isGoogleLinked = user?.providerData?.some(
-              (p) => p.providerId === "google.com"
-            );
-            console.log("auth user:", user);
+            const isGoogle = isGoogleLinked(user);
+            const isAuthLinked = isGoogle
+            const provider = isGoogle ? "Google" : "None";
 
             return (
               <div className="space-y-3">
                 <p className="text-sm opacity-70">
-                  {!isGoogleLinked
+                  {!isAuthLinked
                     ? "Link your account with Google to save your progress across devices."
-                    : "Your account is linked with Google."}
+                    : `Your account is linked with ${provider}.`}
                 </p>
 
-                {isGoogleLinked && googleEmail != "" && (
+                {isAuthLinked && authEmail && (
                   <p className="text-sm">
-                    <span className="font-bold">Email:</span>{" "}
-                    {googleEmail == "" ? "No email available": googleEmail}
+                    <span className="font-bold">Email:</span> {authEmail}
                   </p>
                 )}
 
-                {!isGoogleLinked && (
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => linkGoogleAccount()}
-                  >
-                    Link Google Account
-                  </button>
+                {!isAuthLinked && (
+                  <div className="flex flex-col sm:flex-row gap-2 mt-3">
+                    <button
+                      className="btn w-full sm:w-auto gap-2 bg-white text-gray-800 border border-gray-300 hover:bg-gray-100"
+                      onClick={() => linkGoogleAccount()}
+                    >
+                      <FcGoogle className="w-5 h-5" />
+                      Link Google Account
+                    </button>
+
+                  </div>
                 )}
 
-                {isGoogleLinked && (
+                {isGoogle && (
                   <div className="alert alert-success shadow-sm mt-2">
                     <span>Account linked with Google</span>
                   </div>
@@ -239,14 +251,12 @@ export default function SettingsPage() {
       <div className="card bg-base-100 card-border">
         <div className="card-body p-4 space-y-3">
           <h2 className="card-title">Theme</h2>
-          <p className="text-sm opacity-70">
-            Personalize the theme of the App.
-          </p>
+          <p className="text-sm opacity-70">Personalize the theme of the App.</p>
           <ThemePicker />
         </div>
       </div>
 
-      <div className="mb-30"></div>
+      <div className="mb-30" />
     </div>
   );
 }
