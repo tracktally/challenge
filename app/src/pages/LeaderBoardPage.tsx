@@ -220,7 +220,7 @@ export default function LeaderBoardPage() {
                             "progress h-2 w-28 " +
                             (u.counter >= challenge.goalCounterUser ? "progress-success" : 
                               (u.counter >= challenge.goalCounterUser / 2 ? "progress-primary"
-                              : "progress-secondary"))
+                              : "progress-warning"))
                           }
                           value={u.counter}
                           max={challenge.goalCounterUser}
