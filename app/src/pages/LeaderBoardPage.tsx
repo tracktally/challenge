@@ -218,9 +218,9 @@ export default function LeaderBoardPage() {
                         <progress
                           className={
                             "progress h-2 w-28 " +
-                            (u.counter >= challenge.goalCounterUser
-                              ? "progress-success"
-                              : "progress-primary")
+                            (u.counter >= challenge.goalCounterUser ? "progress-success" : 
+                              (u.counter >= challenge.goalCounterUser / 2 ? "progress-primary"
+                              : "progress-secondary"))
                           }
                           value={u.counter}
                           max={challenge.goalCounterUser}

@@ -45,10 +45,10 @@ export function sortUserByProgress(a: {
     return b.counter - a.counter;
   }
 
-  // last activity: older first
+  // last activity: newer first
   const aAct = normalizeDate(a.lastActivityAt)?.getTime() ?? 0;
   const bAct = normalizeDate(b.lastActivityAt)?.getTime() ?? 0;
-  return aAct - bAct;
+  return bAct - aAct;
 }
 
 export function getResetDates(challenge: {
