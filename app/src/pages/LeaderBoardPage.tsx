@@ -20,6 +20,20 @@ export default function LeaderBoardPage() {
     inactivityCutOff.getDate() - (challenge?.cutOffDays ?? 3)
   );
 
+  const mostRepsPerDayUsers = useMemo(() => {
+      let arr = [...users].map((u) => ({
+      ...u,
+      lastActivityAt: normalizeDate(u.lastActivityAt),
+      goalReachedAt: normalizeDate(u.goalReachedAt),
+      goalPartialReachedAt: normalizeDate(u.goalPartialReachedAt),
+    }));
+
+    arr = arr.sort((a, b) => b.counter - a.counter)
+    .filter(u => u.counter > challenge.goalCounterUser);
+
+    return arr;
+  }, [users, challenge]);
+
   const filteredUsers = useMemo(() => {
     let arr = [...users].map((u) => ({
       ...u,
@@ -27,12 +41,6 @@ export default function LeaderBoardPage() {
       goalReachedAt: normalizeDate(u.goalReachedAt),
       goalPartialReachedAt: normalizeDate(u.goalPartialReachedAt),
     }));
-
-    arr = arr.filter(
-      (u) =>
-        showAllUsers ||
-        (u.lastActivityAt != null && u.lastActivityAt > inactivityCutOff)
-    );
 
     if (activeTab === "progress") {
       arr.sort((a, b) => sortUserByProgress(a, b));
@@ -48,6 +56,12 @@ export default function LeaderBoardPage() {
           (b.totalCounter ?? 0) + b.counter - ((a.totalCounter ?? 0) + a.counter)
       );
     }
+
+    arr = arr.filter(
+      (u) =>
+        showAllUsers ||
+        (u.lastActivityAt != null && u.lastActivityAt > inactivityCutOff)
+    );
 
     return arr;
   }, [users, showAllUsers, inactivityCutOff, activeTab]);
@@ -164,6 +178,23 @@ export default function LeaderBoardPage() {
               const lastActivity = u.lastActivityAt?.getTime?.() ?? 0;
               const flashPeriod = 5 * 60 * 1000; // 2 mins
               const isRecentlyActive = (now - lastActivity < flashPeriod);
+
+              const mostReps1st = mostRepsPerDayUsers?.[0]?.id || null;
+              const mostReps2nd = mostRepsPerDayUsers?.[1]?.id || null;
+              const mostReps3rd = mostRepsPerDayUsers?.[2]?.id || null;
+
+              let mostRepsStr = "";
+              if (u != null) {
+                mostRepsStr = u.id === mostReps1st
+                ? "🚀🚀🚀"
+                : u.id === mostReps2nd
+                ? "🚀🚀"
+                : u.id === mostReps3rd
+                ? "🚀"
+                : "";
+              }
+              
+
               return (
                 <tr
                   key={u.id}
@@ -212,6 +243,7 @@ export default function LeaderBoardPage() {
                     <td className="text-right align-right px-2 py-1">
                       <div className="flex flex-col items-end space-y-1">
                         <div className="text-xs">
+                          <span className="font-bold"> {mostRepsStr} &nbsp;</span>
                           <span className="font-bold">{u.counter}</span>
                           <span> / {challenge.goalCounterUser}</span>
                         </div>
@@ -220,7 +252,7 @@ export default function LeaderBoardPage() {
                             "progress h-2 w-28 " +
                             (u.counter >= challenge.goalCounterUser ? "progress-success" : 
                               (u.counter >= challenge.goalCounterUser / 2 ? "progress-primary"
-                              : "progress-warning"))
+                              : "progress-secondary"))
                           }
                           value={u.counter}
                           max={challenge.goalCounterUser}
